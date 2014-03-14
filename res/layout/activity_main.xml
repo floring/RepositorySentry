@@ -1,8 +1,54 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.repositorysentry.MainActivity"
-    tools:ignore="MergeRootFrame" />
+    android:layout_marginBottom="20dp"
+    android:orientation="vertical"
+    tools:context="com.repositorysentry.MainActivity" 
+    android:padding="30dp">
+
+	<EditText
+	    android:id="@+id/username"
+	    android:text="floring"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:layout_marginBottom="10dp"/>
+	
+	<EditText
+	    android:id="@+id/repository"
+	    android:text="RepositorySentry"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:layout_marginBottom="10dp"/>
+
+	<Button
+	    android:id="@+id/get_commit_button"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Get Commits" />
+	
+	<ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"/>
+
+	
+	<!-- <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.51" >
+
+        <TextView
+            android:id="@+id/result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#000000">
+        </TextView>
+    </ScrollView> -->
+    
+</LinearLayout>
 

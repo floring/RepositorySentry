@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}*/
-		mCommit = new CommitHistory(this);
+		mCommit = new CommitHistory();
 		mUsername = (EditText) findViewById(R.id.username);
 		mRepositoryName = (EditText) findViewById(R.id.repository);
 		mButtonGetCommit = (Button) findViewById(R.id.get_commit_button);
@@ -46,12 +46,10 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				String username = mUsername.getText().toString();
 				String repoName = mRepositoryName.getText().toString();
-				if(username.length() != 0 && repoName.length() != 0) {
+				if(!username.isEmpty() && !repoName.isEmpty()) {
 					ArrayList<HashMap<String, String>> commitsInfo = mCommit.getCommitsHistory(username, repoName);
 					
-					ArrayList<HashMap<String, String>> newCommits = new ArrayList<HashMap<String, String>>(); 
-					newCommits = (ArrayList<HashMap<String,String>>) commitsInfo.clone();
-					displayCommitsList(newCommits);
+					displayCommitsList(commitsInfo);
 				}
 			}
 		});
@@ -60,10 +58,10 @@ public class MainActivity extends Activity {
 	private void displayCommitsList(ArrayList<HashMap<String, String>> commitsInfo) {
 		SimpleAdapter adapter = new SimpleAdapter(
 				MainActivity.this, 
-				commitsInfo, 
+				(ArrayList<HashMap<String,String>>) commitsInfo.clone(), 
 				R.layout.list_item, 
 				new String[] { CommitHistory.NAME_TAG, CommitHistory.DATE_TAG, CommitHistory.MESSAGE_TAG }, 
-				new int[] { R.id.commiterName, R.id.commitDate, R.id.commitMessage });	
+				new int[] { R.id.commiterName, R.id.commitDate, R.id.commitMessage });
 		
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);

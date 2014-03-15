@@ -11,12 +11,6 @@ import android.os.AsyncTask;
 
 public class HttpGetTask extends AsyncTask<String, Void, String>{
 
-	private OnTaskCompletedListener mListener;
-
-    public HttpGetTask(OnTaskCompletedListener listener){
-    	mListener = listener;
-    }
-	
 	@Override
 	protected String doInBackground(String... arg0) {
 		HttpURLConnection urlConnection = null;
@@ -43,12 +37,4 @@ public class HttpGetTask extends AsyncTask<String, Void, String>{
 			
 		return response.toString();
 	}
-	
-	@Override
-	protected void onPostExecute(String result) {
-		super.onPostExecute(result);
-		
-		mListener.onTaskCompleted(result);
-	}
-
 }

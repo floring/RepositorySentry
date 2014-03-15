@@ -2,13 +2,14 @@ package com.repositorysentry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
 
-public class CommitHistory implements OnTaskCompletedListener {
+public class CommitHistory {
 	
 	public static final String COMMIT_TAG = "commit";
 	public static final String MESSAGE_TAG = "message";
@@ -16,27 +17,28 @@ public class CommitHistory implements OnTaskCompletedListener {
 	public static final String NAME_TAG = "name";
 	public static final String DATE_TAG = "date";
 	
-	private ArrayList<HashMap<String, String>> mComitsInformation = new ArrayList<HashMap<String, String>>();
-	private Context mContext;
-	
-	public CommitHistory(Context context) {
-		mContext = context;
-	}
+	ArrayList<HashMap<String, String>> mComitsInformation = new ArrayList<HashMap<String, String>>(); 
 	
 	public ArrayList<HashMap<String, String>> getCommitsHistory(String username, String repoName) {
+		//TODO: possible security hole
 		String url = String.format("https://api.github.com/repos/%s/%s/commits", username, repoName); 
 		
-		new HttpGetTask(this).execute(url);
-		
+		HttpGetTask task = new HttpGetTask();
+		task.execute(url);
+		try {
+			return parseJSON(task.get());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return mComitsInformation;
 	}
 
-	@Override
-	public void onTaskCompleted(String stringParsing) {
-		parseJSON(stringParsing);
-	}
-	
-	private void parseJSON(String jsonStr) {
+	private ArrayList<HashMap<String, String>> parseJSON(String jsonStr) {
+		mComitsInformation.clear();
 		if (jsonStr != null && !jsonStr.isEmpty()) {
 			try {
 				JSONArray jsonArray = new JSONArray(jsonStr);
@@ -64,6 +66,7 @@ public class CommitHistory implements OnTaskCompletedListener {
 				e.printStackTrace();
 			}
 		}
+		return mComitsInformation;
 	}
 
 }

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ListActivity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +30,9 @@ public class MainActivity extends Activity {
 	private Button mButtonGetCommit;
 	private CommitHistory mCommit;
 	
+	// Notification ID to allow for future updates
+	private static final int MY_NOTIFICATION_ID = 1;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,7 +42,7 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}*/
-		mCommit = new CommitHistory();
+		mCommit = new CommitHistory(this);
 		mUsername = (EditText) findViewById(R.id.username);
 		mRepositoryName = (EditText) findViewById(R.id.repository);
 		mButtonGetCommit = (Button) findViewById(R.id.get_commit_button);
@@ -50,6 +56,11 @@ public class MainActivity extends Activity {
 					ArrayList<HashMap<String, String>> commitsInfo = mCommit.getCommitsHistory(username, repoName);
 					
 					displayCommitsList(commitsInfo);
+					
+					ArrayList<HashMap<String, String>> newCommitsData = mCommit.getNewCommitsData(repoName);
+					if(!newCommitsData.isEmpty()) {
+						createCommitNotification(newCommitsData);
+					}
 				}
 			}
 		});
@@ -65,6 +76,22 @@ public class MainActivity extends Activity {
 		
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);
+	}
+	
+	private void createCommitNotification(ArrayList<HashMap<String, String>> newCommitsData) {
+		CharSequence tickerText = "You get " + newCommitsData.size() + " new commits";
+		CharSequence contentTitle = "New Commits";
+		CharSequence contentText = "You've Been Notified!";
+		
+		Notification.Builder notificationBuilder = new Notification.Builder(
+				getApplicationContext())
+				.setTicker(tickerText)
+				.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setAutoCancel(true)
+				.setContentTitle(contentTitle)
+				.setContentText(contentText);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(MY_NOTIFICATION_ID, notificationBuilder.build());
 	}
 	
 	@Override

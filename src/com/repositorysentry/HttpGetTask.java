@@ -16,12 +16,12 @@ public class HttpGetTask extends AsyncTask<String, Void, String>{
 		HttpURLConnection urlConnection = null;
 		URL url = null;
 		StringBuffer response = new StringBuffer();
-		
+
 		try {
 			url = new URL(arg0[0]);
 			urlConnection = (HttpURLConnection) url.openConnection();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-			
+
 			String inputLine;
 			while ((inputLine = reader.readLine()) != null) {
 				response.append(inputLine);
@@ -34,7 +34,7 @@ public class HttpGetTask extends AsyncTask<String, Void, String>{
 		} finally {
 			urlConnection.disconnect();
 		}
-			
+
 		return response.toString();
 	}
 }

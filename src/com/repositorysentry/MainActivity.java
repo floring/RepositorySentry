@@ -29,10 +29,10 @@ public class MainActivity extends Activity {
 	private EditText mUsername, mRepositoryName;
 	private Button mButtonGetCommit;
 	private CommitHistory mCommit;
-	
+
 	// Notification ID to allow for future updates
 	private static final int MY_NOTIFICATION_ID = 1;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,16 +47,16 @@ public class MainActivity extends Activity {
 		mRepositoryName = (EditText) findViewById(R.id.repository);
 		mButtonGetCommit = (Button) findViewById(R.id.get_commit_button);
 		mButtonGetCommit.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				String username = mUsername.getText().toString();
 				String repoName = mRepositoryName.getText().toString();
 				if(!username.isEmpty() && !repoName.isEmpty()) {
 					ArrayList<HashMap<String, String>> commitsInfo = mCommit.getCommitsHistory(username, repoName);
-					
+
 					displayCommitsList(commitsInfo);
-					
+
 					ArrayList<HashMap<String, String>> newCommitsData = mCommit.getNewCommitsData(repoName);
 					if(!newCommitsData.isEmpty()) {
 						createCommitNotification(newCommitsData);
@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
-	
+
 	private void displayCommitsList(ArrayList<HashMap<String, String>> commitsInfo) {
 		SimpleAdapter adapter = new SimpleAdapter(
 				MainActivity.this, 
@@ -73,33 +73,33 @@ public class MainActivity extends Activity {
 				R.layout.list_item, 
 				new String[] { CommitHistory.NAME_TAG, CommitHistory.DATE_TAG, CommitHistory.MESSAGE_TAG }, 
 				new int[] { R.id.commiterName, R.id.commitDate, R.id.commitMessage });
-		
+
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);
 	}
-	
+
 	private void createCommitNotification(ArrayList<HashMap<String, String>> newCommitsData) {
-		CharSequence tickerText = "You get " + newCommitsData.size() + " new commits";
-		CharSequence contentTitle = "New Commits";
-		CharSequence contentText = "You've Been Notified!";
-		
+		CharSequence contentText = "You get " + newCommitsData.size() + " new commits";
+		CharSequence contentTitle = "Commits";
+		CharSequence tickerText= "You've got new commits!";
+
 		Notification.Builder notificationBuilder = new Notification.Builder(
 				getApplicationContext())
-				.setTicker(tickerText)
-				.setSmallIcon(android.R.drawable.stat_sys_warning)
-				.setAutoCancel(true)
-				.setContentTitle(contentTitle)
-				.setContentText(contentText);
+		.setTicker(tickerText)
+		.setSmallIcon(android.R.drawable.stat_sys_warning)
+		.setAutoCancel(true)
+		.setContentTitle(contentTitle)
+		.setContentText(contentText);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(MY_NOTIFICATION_ID, notificationBuilder.build());
 	}
-	
+
 	@Override
 	protected void onPause() {
 
 		super.onPause();
 	}
-	
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
 
 	/*
 	  A placeholder fragment containing a simple view.
-	 
+
 	public static class PlaceholderFragment extends Fragment {
 
 		public PlaceholderFragment() {

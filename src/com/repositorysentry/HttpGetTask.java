@@ -9,7 +9,7 @@ import java.net.URL;
 
 import android.os.AsyncTask;
 
-public class HttpGetTask extends AsyncTask<String, Void, String>{
+public class HttpGetTask extends AsyncTask<String, Void, String> {
 
 	@Override
 	protected String doInBackground(String... arg0) {
@@ -20,7 +20,8 @@ public class HttpGetTask extends AsyncTask<String, Void, String>{
 		try {
 			url = new URL(arg0[0]);
 			urlConnection = (HttpURLConnection) url.openConnection();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					urlConnection.getInputStream()));
 
 			String inputLine;
 			while ((inputLine = reader.readLine()) != null) {

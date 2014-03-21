@@ -4,25 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.ListActivity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View.OnClickListener;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.os.Build;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -32,17 +27,18 @@ public class MainActivity extends Activity {
 
 	// Notification ID to allow for future updates
 	private static final int MY_NOTIFICATION_ID = 1;
+	private long[] mVibratePattern = { 0, 200, 200, 300 };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		/*if (savedInstanceState == null) {
-			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}*/
 		mCommit = new CommitHistory(this);
+		mCommit.mDbHelper = new DatabaseOpenHelper(this);
+		// Get the underlying database for writing
+		mCommit.mDB = mCommit.mDbHelper.getWritableDatabase();
+
 		mUsername = (EditText) findViewById(R.id.username);
 		mRepositoryName = (EditText) findViewById(R.id.repository);
 		mButtonGetCommit = (Button) findViewById(R.id.get_commit_button);
@@ -52,54 +48,65 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				String username = mUsername.getText().toString();
 				String repoName = mRepositoryName.getText().toString();
-				if(!username.isEmpty() && !repoName.isEmpty()) {
-					ArrayList<HashMap<String, String>> commitsInfo = mCommit.getCommitsHistory(username, repoName);
+				if (!username.isEmpty() && !repoName.isEmpty()) {
+					ArrayList<HashMap<String, String>> commitsInfo = mCommit
+							.getCommitsHistory(username, repoName);
 
 					displayCommitsList(commitsInfo);
 
-					ArrayList<HashMap<String, String>> newCommitsData = mCommit.getNewCommitsData(repoName);
-					if(!newCommitsData.isEmpty()) {
+					ArrayList<HashMap<String, String>> newCommitsData = mCommit
+							.getNewCommitsData(repoName);
+					if (!newCommitsData.isEmpty()) {
 						createCommitNotification(newCommitsData);
+					} else {
+						Toast.makeText(getApplicationContext(),
+								"You haven't new commits.", Toast.LENGTH_LONG)
+								.show();
 					}
 				}
 			}
 		});
 	}
 
+	@Override
+	protected void onDestroy() {
+		mCommit.mDB.close();
+		mCommit.mDbHelper.deleteDatabase();
+
+		super.onDestroy();
+
+	}
+
 	private void displayCommitsList(ArrayList<HashMap<String, String>> commitsInfo) {
-		SimpleAdapter adapter = new SimpleAdapter(
-				MainActivity.this, 
-				(ArrayList<HashMap<String,String>>) commitsInfo.clone(), 
-				R.layout.list_item, 
-				new String[] { CommitHistory.NAME_TAG, CommitHistory.DATE_TAG, CommitHistory.MESSAGE_TAG }, 
-				new int[] { R.id.commiterName, R.id.commitDate, R.id.commitMessage });
+		SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
+				(ArrayList<HashMap<String, String>>) commitsInfo.clone(),
+				R.layout.list_item, new String[] { CommitHistory.NAME_TAG,
+						CommitHistory.DATE_TAG, CommitHistory.MESSAGE_TAG },
+				new int[] { R.id.commiterName, R.id.commitDate,
+						R.id.commitMessage });
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(adapter);
 	}
 
-	private void createCommitNotification(ArrayList<HashMap<String, String>> newCommitsData) {
-		CharSequence contentText = "You get " + newCommitsData.size() + " new commits";
+	private void createCommitNotification(
+			ArrayList<HashMap<String, String>> newCommitsData) {
+		CharSequence contentText = "You've got " + newCommitsData.size()
+				+ " new commits";
 		CharSequence contentTitle = "Commits";
-		CharSequence tickerText= "You've got new commits!";
+		CharSequence tickerText = "You've got new commits!";
 
 		Notification.Builder notificationBuilder = new Notification.Builder(
-				getApplicationContext())
-		.setTicker(tickerText)
-		.setSmallIcon(android.R.drawable.stat_sys_warning)
-		.setAutoCancel(true)
-		.setContentTitle(contentTitle)
-		.setContentText(contentText);
+				getApplicationContext()).setTicker(tickerText)
+				.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setAutoCancel(true)
+				.setContentTitle(contentTitle)
+				.setContentText(contentText)
+				.setVibrate(mVibratePattern);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.notify(MY_NOTIFICATION_ID, notificationBuilder.build());
+		notificationManager.notify(MY_NOTIFICATION_ID,
+				notificationBuilder.build());
 	}
-
-	@Override
-	protected void onPause() {
-
-		super.onPause();
-	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,22 +127,5 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*
-	  A placeholder fragment containing a simple view.
-
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
-	}*/
 
 }

@@ -88,12 +88,12 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 
-						SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY, 
+						SystemClock.elapsedRealtime(), 
 						INITIAL_ALARM_DELAY, 
 						mContentIntent);
 				
 				Toast.makeText(getApplicationContext(),
-						"Exact Repeating Alarm Set", Toast.LENGTH_LONG)
+						"Repository Sentry Set", Toast.LENGTH_LONG)
 						.show();
 				
 			}
@@ -104,9 +104,10 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+				mAlarmManager.cancel(mContentIntent);
 				
 				Toast.makeText(getApplicationContext(),
-						"Repeating Alarms Cancelled", Toast.LENGTH_LONG).show();
+						"Repository Sentry Cancelled", Toast.LENGTH_LONG).show();
 			}
 		});
 		

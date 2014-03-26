@@ -40,7 +40,9 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 				.setContentIntent(mContentIntent);
 		notificationManager.notify(COMMIT_NOTIFICATION_ID, notificationBuilder.build());
 		
-		Log.i(TAG,"Sending notification at:" + DateFormat.getDateTimeInstance().format(new Date()));
+		Log.i(TAG,"Sending commit notification at:" + DateFormat.getDateTimeInstance().format(new Date()));
 	}
+	
+	
 
 }

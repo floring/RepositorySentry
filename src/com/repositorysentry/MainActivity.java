@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View.OnClickListener;
@@ -22,17 +25,25 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	private EditText mUsername, mRepositoryName;
-	private Button mButtonGetCommit;
 	private CommitHistory mCommit;
 
 	// Notification ID to allow for future updates
 	private static final int MY_NOTIFICATION_ID = 1;
 	private long[] mVibratePattern = { 0, 200, 200, 300 };
+	
+	private AlarmManager mAlarmManager;
+	private Intent mNotificationIntent;
+	private PendingIntent mContentIntent;
+	private static final long INITIAL_ALARM_DELAY = 1 * 60 * 1000L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+		mNotificationIntent = new Intent(MainActivity.this, CommitNotificationReceiver.class);
+		mContentIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mNotificationIntent, 0);
 
 		mCommit = new CommitHistory(this);
 		mCommit.mDbHelper = new DatabaseOpenHelper(this);
@@ -41,8 +52,9 @@ public class MainActivity extends Activity {
 
 		mUsername = (EditText) findViewById(R.id.username);
 		mRepositoryName = (EditText) findViewById(R.id.repository);
-		mButtonGetCommit = (Button) findViewById(R.id.get_commit_button);
-		mButtonGetCommit.setOnClickListener(new OnClickListener() {
+		/*
+		final Button buttonGetCommit = (Button) findViewById(R.id.get_commit_button);
+		buttonGetCommit.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -57,15 +69,47 @@ public class MainActivity extends Activity {
 					ArrayList<HashMap<String, String>> newCommitsData = mCommit
 							.getNewCommitsData(repoName);
 					if (!newCommitsData.isEmpty()) {
-						createCommitNotification(newCommitsData);
+						CharSequence contentText = "You've got " + newCommitsData.size()
+								+ " new commits";
+						CharSequence tickerText = "You've got new commits!";
+						createCommitNotification(newCommitsData, contentText, tickerText);
 					} else {
-						Toast.makeText(getApplicationContext(),
-								"You haven't new commits.", Toast.LENGTH_LONG)
-								.show();
+						CharSequence contentText = "You haven't got new commits.";
+						CharSequence tickerText = "You haven't new commits!";
+						createCommitNotification(newCommitsData, contentText, tickerText);
 					}
 				}
 			}
+		});*/
+		
+		final Button buttonSetAlarm = (Button) findViewById(R.id.set_alarm_button);
+		buttonSetAlarm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 
+						SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY, 
+						INITIAL_ALARM_DELAY, 
+						mContentIntent);
+				
+				Toast.makeText(getApplicationContext(),
+						"Exact Repeating Alarm Set", Toast.LENGTH_LONG)
+						.show();
+				
+			}
 		});
+		
+		final Button buttonCancelRepeatingAlarm = (Button) findViewById(R.id.cancel_alarm_button);
+		buttonCancelRepeatingAlarm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Toast.makeText(getApplicationContext(),
+						"Repeating Alarms Cancelled", Toast.LENGTH_LONG).show();
+			}
+		});
+		
 	}
 
 	@Override
@@ -90,11 +134,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void createCommitNotification(
-			ArrayList<HashMap<String, String>> newCommitsData) {
-		CharSequence contentText = "You've got " + newCommitsData.size()
-				+ " new commits";
-		CharSequence contentTitle = "Commits";
-		CharSequence tickerText = "You've got new commits!";
+			ArrayList<HashMap<String, String>> newCommitsData,
+			CharSequence contentText, CharSequence tickerText) {
+		CharSequence contentTitle = "New Commits";
 
 		Notification.Builder notificationBuilder = new Notification.Builder(
 				getApplicationContext()).setTicker(tickerText)

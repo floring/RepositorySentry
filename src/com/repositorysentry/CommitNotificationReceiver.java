@@ -24,6 +24,9 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		String username = intent.getStringExtra("Username");
+		String repositoryName = intent.getStringExtra("RepositoryName");
+		
 		mNotificationIntent = new Intent(context, MainActivity.class);
 		mContentIntent = PendingIntent.getActivity(context, 0,
 				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -35,10 +38,10 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 		inspector.mDB = inspector.mDbHelper.getWritableDatabase();
 		
 		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
-				.getCommitsHistory("floring", "RepositorySentry");
+				.getCommitsHistory(username, repositoryName);
 		
 		ArrayList<HashMap<String, String>> newCommitsData = inspector
-				.getNewCommits("RepositorySentry", commitsInfo);
+				.getNewCommits(repositoryName, commitsInfo);
 
 		if (!newCommitsData.isEmpty()) {
 			CharSequence contentText = "You've got " + newCommitsData.size()
@@ -52,6 +55,9 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 		}
 		Log.i(TAG, "Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
+		
+		inspector.mDB.close();
+		inspector.mDbHelper.deleteDatabase();
 	}
 
 	private void sendNotification(Context context,

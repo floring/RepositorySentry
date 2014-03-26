@@ -26,10 +26,6 @@ public class MainActivity extends Activity {
 
 	private EditText mUsername, mRepositoryName;
 
-	// Notification ID to allow for future updates
-	private static final int MY_NOTIFICATION_ID = 1;
-	private long[] mVibratePattern = { 0, 200, 200, 300 };
-	
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
@@ -41,11 +37,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-		mNotificationIntent = new Intent(MainActivity.this, CommitNotificationReceiver.class);
-		mContentIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mNotificationIntent, 0);
-
-		mUsername = (EditText) findViewById(R.id.username);
-		mRepositoryName = (EditText) findViewById(R.id.repository);
 		/*
 		final Button buttonGetCommit = (Button) findViewById(R.id.get_commit_button);
 		buttonGetCommit.setOnClickListener(new OnClickListener() {
@@ -81,6 +72,18 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+				
+				mUsername = (EditText) findViewById(R.id.username);
+				mRepositoryName = (EditText) findViewById(R.id.repository);
+				
+				mNotificationIntent = new Intent(MainActivity.this, CommitNotificationReceiver.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("Username", mUsername.getText().toString());
+				bundle.putString("RepositoryName", mRepositoryName.getText().toString());
+				mNotificationIntent.putExtras(bundle);
+				mContentIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mNotificationIntent, 0);
+				
+				//TODO: change 2nd parameter to SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY
 				mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 
 						SystemClock.elapsedRealtime(), 
 						INITIAL_ALARM_DELAY, 
@@ -117,7 +120,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 
 	}
-
+/*
 	private void displayCommitsList(ArrayList<HashMap<String, String>> commitsInfo) {
 		SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
 				(ArrayList<HashMap<String, String>>) commitsInfo.clone(),
@@ -145,7 +148,7 @@ public class MainActivity extends Activity {
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(MY_NOTIFICATION_ID,
 				notificationBuilder.build());
-	}
+	}*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

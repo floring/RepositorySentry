@@ -8,41 +8,65 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class CommitNotificationReceiver extends BroadcastReceiver {
-	
+
 	private static final String TAG = "CommitNotificationReceiver";
 	
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
-	
-	CharSequence tickerText = "You've got new commits!";
-	CharSequence contentTitle = "New Commits";
-	CharSequence contentText = "You've got new commits";
+
 	private static final int COMMIT_NOTIFICATION_ID = 1;
 	private long[] mVibratePattern = { 0, 200, 200, 300 };
-
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mNotificationIntent = new Intent(context, MainActivity.class);
-		mContentIntent = PendingIntent.getActivity(context, 0, mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-		
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification.Builder notificationBuilder = new Notification.Builder(context)
-				.setTicker(tickerText)
-				.setContentTitle(contentTitle)
-				.setContentText(contentText)
-				.setAutoCancel(true)
-				.setSmallIcon(android.R.drawable.stat_sys_warning)
-				.setVibrate(mVibratePattern)
-				.setContentIntent(mContentIntent);
-		notificationManager.notify(COMMIT_NOTIFICATION_ID, notificationBuilder.build());
-		
-		Log.i(TAG,"Sending commit notification at:" + DateFormat.getDateTimeInstance().format(new Date()));
-	}
-	
-	
+		mContentIntent = PendingIntent.getActivity(context, 0,
+				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 
+		CommitHistory commitHistory = new CommitHistory(context);
+		CommitInspector inspector = new CommitInspector();
+		
+		inspector.mDbHelper = new DatabaseOpenHelper(context);
+		inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+		
+		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
+				.getCommitsHistory("floring", "RepositorySentry");
+		
+		ArrayList<HashMap<String, String>> newCommitsData = inspector
+				.getNewCommits("RepositorySentry", commitsInfo);
+
+		if (!newCommitsData.isEmpty()) {
+			CharSequence contentText = "You've got " + newCommitsData.size()
+					+ " new commits";
+			CharSequence tickerText = "You've got new commits!";
+			sendNotification(context, newCommitsData, contentText, tickerText);
+		} else {
+			CharSequence contentText = "You haven't got new commits.";
+			CharSequence tickerText = "You haven't new commits!";
+			sendNotification(context, newCommitsData, contentText, tickerText);
+		}
+		Log.i(TAG, "Sending commit notification at:"
+				+ DateFormat.getDateTimeInstance().format(new Date()));
+	}
+
+	private void sendNotification(Context context,
+			ArrayList<HashMap<String, String>> newCommitsData,
+			CharSequence contentText, CharSequence tickerText) {
+		CharSequence contentTitle = "New Commits";
+
+		NotificationManager notificationManager = (NotificationManager) context
+				.getSystemService(Context.NOTIFICATION_SERVICE);
+		Notification.Builder notificationBuilder = new Notification.Builder(
+				context).setTicker(tickerText).setContentTitle(contentTitle)
+				.setContentText(contentText).setAutoCancel(true)
+				.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setVibrate(mVibratePattern).setContentIntent(mContentIntent);
+		notificationManager.notify(COMMIT_NOTIFICATION_ID,
+				notificationBuilder.build());
+	}
 }

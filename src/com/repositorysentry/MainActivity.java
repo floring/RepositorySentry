@@ -25,7 +25,6 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	private EditText mUsername, mRepositoryName;
-	private CommitHistory mCommit;
 
 	// Notification ID to allow for future updates
 	private static final int MY_NOTIFICATION_ID = 1;
@@ -34,7 +33,7 @@ public class MainActivity extends Activity {
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
-	private static final long INITIAL_ALARM_DELAY = 1 * 60 * 1000L;
+	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +43,6 @@ public class MainActivity extends Activity {
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 		mNotificationIntent = new Intent(MainActivity.this, CommitNotificationReceiver.class);
 		mContentIntent = PendingIntent.getBroadcast(MainActivity.this, 0, mNotificationIntent, 0);
-
-		mCommit = new CommitHistory(this);
-		mCommit.mDbHelper = new DatabaseOpenHelper(this);
-		// Get the underlying database for writing
-		mCommit.mDB = mCommit.mDbHelper.getWritableDatabase();
 
 		mUsername = (EditText) findViewById(R.id.username);
 		mRepositoryName = (EditText) findViewById(R.id.repository);
@@ -115,8 +109,10 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		mCommit.mDB.close();
-		mCommit.mDbHelper.deleteDatabase();
+		//TODO: close database
+		
+		//mCommit.mDB.close();
+		//mCommit.mDbHelper.deleteDatabase();
 
 		super.onDestroy();
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class CommitNotificationReceiver extends BroadcastReceiver {
+public class NotificationReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "CommitNotificationReceiver";
 	
@@ -32,14 +32,10 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		CommitHistory commitHistory = new CommitHistory(context);
-		CommitInspector inspector = new CommitInspector();
-		
-		inspector.mDbHelper = new DatabaseOpenHelper(context);
-		inspector.mDB = inspector.mDbHelper.getWritableDatabase();
-		
 		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
 				.getCommitsHistory(username, repositoryName);
 		
+		CommitInspector inspector = CommitInspector.getInstance();
 		ArrayList<HashMap<String, String>> newCommitsData = inspector
 				.getNewCommits(repositoryName, commitsInfo);
 
@@ -49,15 +45,12 @@ public class CommitNotificationReceiver extends BroadcastReceiver {
 			CharSequence tickerText = "You've got new commits!";
 			sendNotification(context, newCommitsData, contentText, tickerText);
 		} else {
-			CharSequence contentText = "You haven't got new commits.";
-			CharSequence tickerText = "You haven't new commits!";
+			CharSequence contentText = "You've got no commits.";
+			CharSequence tickerText = "You've got no commits!";
 			sendNotification(context, newCommitsData, contentText, tickerText);
 		}
 		Log.i(TAG, "Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
-		
-		inspector.mDB.close();
-		inspector.mDbHelper.deleteDatabase();
 	}
 
 	private void sendNotification(Context context,

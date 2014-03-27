@@ -23,6 +23,8 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+	
+	private CommitInspector mInspector;
 
 	private EditText mUsername, mRepositoryName;
 
@@ -35,6 +37,14 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mUsername = (EditText) findViewById(R.id.username);
+		mRepositoryName = (EditText) findViewById(R.id.repository);
+		
+		mInspector = CommitInspector.getInstance();
+		
+		mInspector.mDbHelper = new DatabaseOpenHelper(this);
+		mInspector.mDB = mInspector.mDbHelper.getWritableDatabase();
 		
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 		/*
@@ -72,11 +82,7 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				
-				mUsername = (EditText) findViewById(R.id.username);
-				mRepositoryName = (EditText) findViewById(R.id.repository);
-				
-				mNotificationIntent = new Intent(MainActivity.this, CommitNotificationReceiver.class);
+				mNotificationIntent = new Intent(MainActivity.this, NotificationReceiver.class);
 				Bundle bundle = new Bundle();
 				bundle.putString("Username", mUsername.getText().toString());
 				bundle.putString("RepositoryName", mRepositoryName.getText().toString());
@@ -113,9 +119,8 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		//TODO: close database
-		
-		//mCommit.mDB.close();
-		//mCommit.mDbHelper.deleteDatabase();
+		mInspector.mDB.close();
+		mInspector.mDbHelper.deleteDatabase();
 
 		super.onDestroy();
 

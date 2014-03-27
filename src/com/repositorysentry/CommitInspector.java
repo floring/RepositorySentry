@@ -8,10 +8,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class CommitInspector {
+	
+	private static CommitInspector mInspector;
 
 	public DatabaseOpenHelper mDbHelper;
 	public SQLiteDatabase mDB = null;
 	private ArrayList<HashMap<String, String>> mNewComitsData = new ArrayList<HashMap<String, String>>();
+	
+	private CommitInspector() { }
+	
+	public static CommitInspector getInstance() {
+		if(mInspector == null) {
+			mInspector = new CommitInspector();
+		}
+		return mInspector;
+	}
 
 	public ArrayList<HashMap<String, String>> getNewCommits(String repoName,
 			ArrayList<HashMap<String, String>> comitsHistory) {

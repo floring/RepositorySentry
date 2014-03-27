@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         
-        <receiver android:name=".CommitNotificationReceiver" />
+        <receiver android:name=".NotificationReceiver" />
     </application>
 
 </manifest>

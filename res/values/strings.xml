@@ -4,5 +4,11 @@
     <string name="app_name">RepositorySentry</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    
+    <!-- **** Strings for List Fragment for each Relation **** -->
+    
+    <!-- Alarm List Fragment Strings -->
+    <string name="alarm_list_button_create">Create</string>
+    <string name="alarm_list_filter_hint">Title Filter...</string>
 
 </resources>

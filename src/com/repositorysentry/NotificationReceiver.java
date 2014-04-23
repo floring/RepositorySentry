@@ -44,11 +44,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 					+ " new commits";
 			CharSequence tickerText = "You've got new commits!";
 			sendNotification(context, newCommitsData, contentText, tickerText);
-		} else {
-			CharSequence contentText = "You've got no commits.";
-			CharSequence tickerText = "You've got no commits!";
-			sendNotification(context, newCommitsData, contentText, tickerText);
 		}
+		
 		Log.i(TAG, "Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
 	}

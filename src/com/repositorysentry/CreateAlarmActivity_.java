@@ -1,0 +1,168 @@
+package com.repositorysentry;
+
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class CreateAlarmActivity_ extends Activity {
+	private CommitInspector mInspector;
+
+	private EditText mUsername, mRepositoryName;
+
+	private AlarmManager mAlarmManager;
+	private Intent mNotificationIntent;
+	private PendingIntent mContentIntent;
+	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.create_alarm);
+
+		mUsername = (EditText) findViewById(R.id.edittext_username);
+		mRepositoryName = (EditText) findViewById(R.id.edittext_repository);
+		
+		mInspector = CommitInspector.getInstance();
+		
+		mInspector.mDbHelper = new DatabaseOpenHelper(this);
+		mInspector.mDB = mInspector.mDbHelper.getWritableDatabase();
+		
+		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+		/*
+		final Button buttonGetCommit = (Button) findViewById(R.id.get_commit_button);
+		buttonGetCommit.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				String username = mUsername.getText().toString();
+				String repoName = mRepositoryName.getText().toString();
+				if (!username.isEmpty() && !repoName.isEmpty()) {
+					ArrayList<HashMap<String, String>> commitsInfo = mCommit
+							.getCommitsHistory(username, repoName);
+
+					displayCommitsList(commitsInfo);
+
+					ArrayList<HashMap<String, String>> newCommitsData = mCommit
+							.getNewCommitsData(repoName);
+					if (!newCommitsData.isEmpty()) {
+						CharSequence contentText = "You've got " + newCommitsData.size()
+								+ " new commits";
+						CharSequence tickerText = "You've got new commits!";
+						createCommitNotification(newCommitsData, contentText, tickerText);
+					} else {
+						CharSequence contentText = "You haven't got new commits.";
+						CharSequence tickerText = "You haven't new commits!";
+						createCommitNotification(newCommitsData, contentText, tickerText);
+					}
+				}
+			}
+		});*/
+		
+		final Button buttonSetAlarm = (Button) findViewById(R.id.button_set_alarm);
+		buttonSetAlarm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mNotificationIntent = new Intent(CreateAlarmActivity_.this, NotificationReceiver.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("Username", mUsername.getText().toString());
+				bundle.putString("RepositoryName", mRepositoryName.getText().toString());
+				mNotificationIntent.putExtras(bundle);
+				mContentIntent = PendingIntent.getBroadcast(CreateAlarmActivity_.this, 0, mNotificationIntent, 0);
+				
+				//TODO: change 2nd parameter to SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY
+				mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 
+						SystemClock.elapsedRealtime(), 
+						INITIAL_ALARM_DELAY, 
+						mContentIntent);
+				
+				Toast.makeText(getApplicationContext(),
+						"Repository Sentry Set", Toast.LENGTH_LONG)
+						.show();
+				
+			}
+		});
+		
+		/*final Button buttonCancelRepeatingAlarm = (Button) findViewById(R.id.button_cancel_alarm);
+		buttonCancelRepeatingAlarm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mAlarmManager.cancel(mContentIntent);
+				
+				Toast.makeText(getApplicationContext(),
+						"Repository Sentry Cancelled", Toast.LENGTH_LONG).show();
+			}
+		});*/
+		
+	}
+
+	@Override
+	protected void onDestroy() {
+		//TODO: close database
+		mInspector.mDB.close();
+		mInspector.mDbHelper.deleteDatabase();
+
+		super.onDestroy();
+
+	}
+/*
+	private void displayCommitsList(ArrayList<HashMap<String, String>> commitsInfo) {
+		SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
+				(ArrayList<HashMap<String, String>>) commitsInfo.clone(),
+				R.layout.list_item, new String[] { CommitHistory.NAME_TAG,
+						CommitHistory.DATE_TAG, CommitHistory.MESSAGE_TAG },
+				new int[] { R.id.commiterName, R.id.commitDate,
+						R.id.commitMessage });
+
+		ListView listView = (ListView) findViewById(android.R.id.list);
+		listView.setAdapter(adapter);
+	}
+
+	private void createCommitNotification(
+			ArrayList<HashMap<String, String>> newCommitsData,
+			CharSequence contentText, CharSequence tickerText) {
+		CharSequence contentTitle = "New Commits";
+
+		Notification.Builder notificationBuilder = new Notification.Builder(
+				getApplicationContext()).setTicker(tickerText)
+				.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setAutoCancel(true)
+				.setContentTitle(contentTitle)
+				.setContentText(contentText)
+				.setVibrate(mVibratePattern);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(MY_NOTIFICATION_ID,
+				notificationBuilder.build());
+	}*/
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}

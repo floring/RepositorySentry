@@ -1,0 +1,122 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical">
+    
+    <!-- Username -->
+
+    <TextView
+        android:id="@+id/textview_label_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textAppearance="?android:attr/textAppearanceLarge" >
+    </TextView>
+
+	<EditText
+	    android:id="@+id/edittext_username"
+	    android:text="floring"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textview_label_username"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:hint="Enter account username" 
+        android:inputType="textShortMessage">
+        
+	    <requestFocus />
+    </EditText>
+	
+	<!-- Repository -->
+
+    <TextView
+        android:id="@+id/textview_label_repository"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/edittext_username"
+        android:layout_marginTop="25dp"
+        android:text="Repository Name"
+        android:textAppearance="?android:attr/textAppearanceLarge" >
+    </TextView>
+	
+	<EditText
+	    android:id="@+id/edittext_repository"
+	    android:text="RepositorySentry"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textview_label_repository"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:hint="Enter repository name you want to check" 
+        android:inputType="textShortMessage">
+	    
+	    <requestFocus />
+	  </EditText>  
+
+	<Button
+	    android:id="@+id/button_get_commit"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginBottom="10dp"
+	    android:layout_marginTop="14dp"
+	    android:layout_alignParentLeft="true"
+        android:layout_below="@id/edittext_repository"
+	    android:text="Get Commits" />
+	
+	<!-- Set, Cancel, Clear Buttons -->
+	
+	<Button
+        android:id="@+id/button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="25dp"
+        android:text="Cancel" />
+	
+	<Button
+        android:id="@+id/button_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Clear All" />
+	
+	<Button
+        android:id="@+id/button_set_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Set" />
+	
+	<!-- 
+	<ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"/> -->
+
+	
+	<!-- <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.51" >
+
+        <TextView
+            android:id="@+id/result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#000000">
+        </TextView>
+    </ScrollView> -->
+    
+</RelativeLayout>
+

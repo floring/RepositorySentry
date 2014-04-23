@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Date;
+import android.util.DisplayMetrics;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -19,10 +20,14 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -38,6 +43,8 @@ public class MainActivity extends ListActivity {
 	
 	private AlarmListAdapter mAlarmAdapter;
 	private AlarmManager mAlarmManager;
+	private GestureDetector mGestureDetector;
+	private ListView mAlarmItems; 
 	
 	private CommitInspector mInspector;
 
@@ -59,22 +66,38 @@ public class MainActivity extends ListActivity {
 			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
+				
 				Intent intent = new Intent(MainActivity.this, CreateAlarmActivity.class);
 				startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
 			}
 		});
 		
-		//setListAdapter(mAlarmAdapter);
+		mAlarmItems = (ListView) findViewById(android.R.id.list);
+		setListAdapter(mAlarmAdapter);
 		
-		ListView alarmItems = (ListView) findViewById(android.R.id.list);
-		alarmItems.setAdapter(mAlarmAdapter);
-		alarmItems.setOnItemLongClickListener(new OnItemLongClickListener() {
+		// Calculate touch parameters based on display metrics
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+        final int minDistance = (int)(120.0f * dm.densityDpi / 160.0f + 0.5); 
+        final int maxPath = (int)(250.0f * dm.densityDpi / 160.0f + 0.5);
+        final double velocity = 200.0f * dm.densityDpi / 160.0f + 0.5;
+		
+		mGestureDetector = new GestureDetector(getApplicationContext(), new ListItemGestureDetector(minDistance, maxPath, velocity));
+		mAlarmItems.setOnTouchListener( new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+
+				return mGestureDetector.onTouchEvent(event);
+			}
+		});
+		
+		
+		/*mAlarmItems.setAdapter(mAlarmAdapter);
+		mAlarmItems.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapter, View view, int position,
 					long id) {
-				// TODO Auto-generated method stub
 				
 				final int positionToRemove = position;
 
@@ -86,7 +109,6 @@ public class MainActivity extends ListActivity {
 
 					@Override
 					public void onClick(DialogInterface d, int which) {
-						// TODO Auto-generated method stub
 						AlarmItem alarmItem = (AlarmItem) mAlarmAdapter.getItem(positionToRemove);
 						PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
 						mAlarmManager.cancel(pendingNoteIntent);
@@ -100,21 +122,9 @@ public class MainActivity extends ListActivity {
 		        
 				return false;
 			}			
-		});
-	}
+		});*/
 	
-	private PendingIntent composeRequiredIntent(AlarmItem alarmItem) {
-		Bundle bundle = new Bundle();
-		bundle.putString("Username", alarmItem.getUsername());
-		bundle.putString("RepositoryName", alarmItem.getRepositoryName());
-		
-		Intent notifIntent = new Intent(getApplicationContext(), NotificationReceiver.class);
-		notifIntent.putExtras(bundle);
-		PendingIntent pendingNoteIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, notifIntent, 0);
-		
-		return pendingNoteIntent;
-	}
-	
+		}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -174,6 +184,18 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
+	private PendingIntent composeRequiredIntent(AlarmItem alarmItem) {
+		Bundle bundle = new Bundle();
+		bundle.putString("Username", alarmItem.getUsername());
+		bundle.putString("RepositoryName", alarmItem.getRepositoryName());
+		
+		Intent notifIntent = new Intent(getApplicationContext(), NotificationReceiver.class);
+		notifIntent.putExtras(bundle);
+		PendingIntent pendingNoteIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, notifIntent, 0);
+		
+		return pendingNoteIntent;
+	}
+
 	private void resetAllSentries() {		
 		for(int i = 0; i < mAlarmAdapter.getCount(); i++) {
 			AlarmItem alarmItem = (AlarmItem) mAlarmAdapter.getItem(i);
@@ -181,6 +203,7 @@ public class MainActivity extends ListActivity {
 			
 			mAlarmManager.cancel(pendingNoteIntent);
 		}
+		mAlarmAdapter.notifyDataSetChanged();
 		Toast.makeText(getApplicationContext(),
 				"All sentries has been cancelled", Toast.LENGTH_LONG).show();
 	}
@@ -237,6 +260,51 @@ public class MainActivity extends ListActivity {
 				writer.close();
 			}
 		}
+	}
+	
+	public class ListItemGestureDetector extends SimpleOnGestureListener {
+		
+		private int FLING_MIN_DISTANCE; 
+	    private int FLING_MAX_OFF_PATH;
+	    private double FLING_THRESHOLD_VELOCITY;
+	    
+	    public ListItemGestureDetector(int minDistance, int maxPath, double velocity) {
+	    	FLING_MIN_DISTANCE = minDistance;
+	    	FLING_MAX_OFF_PATH = maxPath;
+	    	FLING_THRESHOLD_VELOCITY = velocity;
+	    }
+		
+		@Override
+		public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+			if (Math.abs(event1.getY() - event2.getY()) > FLING_MAX_OFF_PATH) {
+				return false;
+			}
+			// Right to Left fling
+			if(event1.getX() - event2.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
+	            
+	        } 
+			// Left to Right fling
+			else if(event2.getX() - event1.getX() > FLING_MIN_DISTANCE && Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
+				int positionToRemove = mAlarmItems.pointToPosition((int) event1.getX(), (int) event1.getY());
+				
+				AlarmItem alarmItem = (AlarmItem) mAlarmAdapter.getItem(positionToRemove);
+				PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
+				mAlarmManager.cancel(pendingNoteIntent);
+				
+				mAlarmAdapter.removeItem(positionToRemove);
+				mAlarmAdapter.notifyDataSetChanged();
+				Toast.makeText(getApplicationContext(),
+						"This sentry has been cancelled", Toast.LENGTH_LONG).show();
+			}
+
+			return false;
+			
+		}
+		
+	    @Override
+	    public boolean onDown(MotionEvent e) {
+	          return true;
+	    }
 	}
 
 }

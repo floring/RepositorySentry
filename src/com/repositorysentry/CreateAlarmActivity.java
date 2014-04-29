@@ -9,101 +9,102 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 public class CreateAlarmActivity extends Activity {
-	
+
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
-	
+
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
 	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
-	
+
+	private final Long[] ALARM_INTERVAL = {
+			AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+			AlarmManager.INTERVAL_HALF_HOUR, AlarmManager.INTERVAL_HOUR,
+			AlarmManager.INTERVAL_HALF_DAY, AlarmManager.INTERVAL_DAY };
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_alarm);
-		
-		mUsernameText = (EditText) findViewById(R.id.edittext_username);
-		mRepositoryText= (EditText) findViewById(R.id.edittext_repository);
-		
+
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-		
-		// OnClickListener for Cancel Button
-		final Button buttonCancel = (Button) findViewById(R.id.button_cancel);
-		buttonCancel.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-		});
-		
+
+		mUsernameText = (EditText) findViewById(R.id.edittext_username);
+		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
+
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);
 		buttonClear.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				mUsernameText.setText("");
 				mRepositoryText.setText("");
 			}
 		});
-		
+
 		// OnClickListener for Set Alarm Button
 		final Button buttonSetAlarm = (Button) findViewById(R.id.button_set_alarm);
 		buttonSetAlarm.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				String username = mUsernameText.getText().toString();
 				String repositoryName = mRepositoryText.getText().toString();
-				
+
 				createAlarmItem(username, repositoryName);
 				setAlarm(username, repositoryName);
-				
+
 				finish();
 			}
 		});
-		
+
 	}
-	
+
 	private void createAlarmItem(String username, String repositoryName) {
 		String creationDate = getDateString();
 		Intent data = new Intent();
 		AlarmItem.packageIntent(data, username, repositoryName, creationDate);
 		setResult(RESULT_OK, data);
 	};
-	
+
 	private void setAlarm(String username, String repositoryName) {
-		
+
 		Bundle bundle = new Bundle();
 		bundle.putString("Username", username);
 		bundle.putString("RepositoryName", repositoryName);
-		mNotificationIntent = new Intent(getApplicationContext(), NotificationReceiver.class);
+		mNotificationIntent = new Intent(getApplicationContext(),
+				NotificationReceiver.class);
 		mNotificationIntent.putExtras(bundle);
-		
-		mContentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, mNotificationIntent, 0);
-		
-		//TODO: change 2nd parameter to SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY
-		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 
-				SystemClock.elapsedRealtime(), 
-				INITIAL_ALARM_DELAY, 
+
+		mContentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
+				mNotificationIntent, 0);
+
+		// TODO: change 2nd parameter to SystemClock.elapsedRealtime() +
+		// INITIAL_ALARM_DELAY
+		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+				SystemClock.elapsedRealtime(), INITIAL_ALARM_DELAY,
 				mContentIntent);
-		
-		Toast.makeText(getApplicationContext(),
-				"Repository Sentry Set", Toast.LENGTH_LONG)
-				.show();
+
+		// mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+		// SystemClock.elapsedRealtime(),
+		// mFiringInterval, mContentIntent);
+
+		Toast.makeText(getApplicationContext(), "Repository Sentry Set",
+				Toast.LENGTH_LONG).show();
 	}
-	
-	private String getDateString() {		
+
+	private String getDateString() {
 		Calendar c = Calendar.getInstance();
 		int year = c.get(Calendar.YEAR);
 		int monthOfYear = c.get(Calendar.MONTH);
@@ -120,7 +121,7 @@ public class CreateAlarmActivity extends Activity {
 			day = "0" + dayOfMonth;
 
 		String dateString = day + "." + mon + "." + year;
-		
+
 		return dateString;
 	}
 

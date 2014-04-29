@@ -8,17 +8,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class CommitInspector {
-	
+
 	private static CommitInspector mInspector;
 
 	public DatabaseOpenHelper mDbHelper;
 	public SQLiteDatabase mDB = null;
 	private ArrayList<HashMap<String, String>> mNewComitsData = new ArrayList<HashMap<String, String>>();
-	
-	private CommitInspector() { }
-	
+
+	private CommitInspector() {
+	}
+
 	public static CommitInspector getInstance() {
-		if(mInspector == null) {
+		if (mInspector == null) {
 			mInspector = new CommitInspector();
 		}
 		return mInspector;
@@ -28,21 +29,28 @@ public class CommitInspector {
 			ArrayList<HashMap<String, String>> comitsHistory) {
 		mNewComitsData.clear();
 		for (HashMap<String, String> item : comitsHistory) {
-			String name = item.get(CommitHistory.NAME_TAG);
-			String date = item.get(CommitHistory.DATE_TAG);
-			String message = item.get(CommitHistory.MESSAGE_TAG);
+			String name = item.get(CommitHistoryParsing.NAME_TAG);
+			String date = item.get(CommitHistoryParsing.DATE_TAG);
+			String message = item.get(CommitHistoryParsing.MESSAGE_TAG);
 			if (!isRowExists(repoName, name, date, message)) {
 				long requestCode = insertRow(repoName, name, date, message);
 
 				HashMap<String, String> commitInfo = new HashMap<String, String>();
-				commitInfo.put(CommitHistory.REPOSITORY_TAG, repoName);
-				commitInfo.put(CommitHistory.NAME_TAG, name);
-				commitInfo.put(CommitHistory.DATE_TAG, date);
-				commitInfo.put(CommitHistory.MESSAGE_TAG, message);
+				commitInfo.put(CommitHistoryParsing.REPOSITORY_TAG, repoName);
+				commitInfo.put(CommitHistoryParsing.NAME_TAG, name);
+				commitInfo.put(CommitHistoryParsing.DATE_TAG, date);
+				commitInfo.put(CommitHistoryParsing.MESSAGE_TAG, message);
 				mNewComitsData.add(commitInfo);
 			}
 		}
 		return mNewComitsData;
+	}
+
+	public void removeRepositoryRowsFromDB(String repoName) {
+		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=?";
+		String[] whereArgs = new String[] { repoName };
+
+		mDB.delete(DatabaseOpenHelper.TABLE_NAME, whereClause, whereArgs);
 	}
 
 	private boolean isRowExists(String repositoryName, String name,

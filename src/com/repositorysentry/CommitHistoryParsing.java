@@ -9,7 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-public class CommitHistory {
+
+public class CommitHistoryParsing {
 
 	public static final String COMMIT_TAG = "commit";
 	public static final String MESSAGE_TAG = "message";
@@ -19,9 +20,9 @@ public class CommitHistory {
 	public static final String REPOSITORY_TAG = "repository";
 
 	private Context mContext;
-	private ArrayList<HashMap<String, String>> mComitsData = new ArrayList<HashMap<String, String>>();	
+	private ArrayList<HashMap<String, String>> mComitsData = new ArrayList<HashMap<String, String>>();
 
-	public CommitHistory(Context context) {
+	public CommitHistoryParsing(Context context) {
 		mContext = context;
 	}
 

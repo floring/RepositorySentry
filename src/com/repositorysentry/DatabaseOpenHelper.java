@@ -40,8 +40,4 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 		// TODO Auto-generated method stub
 		// N / A
 	}
-
-	void deleteDatabase() {
-		mContext.deleteDatabase(NAME);
-	}
 }

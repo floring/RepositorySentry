@@ -8,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class AlarmListAdapter extends BaseAdapter {
+public class AlarmListAdapter extends BaseAdapter implements Filterable {
 	
-	private final List<AlarmItem> mItems = new ArrayList<AlarmItem>();
+	private List<AlarmItem> mItems = new ArrayList<AlarmItem>();
+	private List<AlarmItem> mFilteredItems = new ArrayList<AlarmItem>();
 	
 	private final Context mContext;
 	
@@ -66,8 +69,8 @@ public class AlarmListAdapter extends BaseAdapter {
 		
 		final AlarmItem alarmItem = (AlarmItem) getItem(position);	
 
-		// Inflate the View for this ToDoItem
-		// from todo_item.xml.
+		// Inflate the View for this AlarmItem
+		// from alarm_listview_item.xml.
 		LayoutInflater alarmInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		RelativeLayout itemLayout = (RelativeLayout)alarmInflater.inflate(R.layout.alarm_listview_item, null);
 
@@ -81,6 +84,47 @@ public class AlarmListAdapter extends BaseAdapter {
 		dateView.setText(AlarmItem.FORMAT.format(alarmItem.getDate()));
 
 		return itemLayout;
+	}
+
+	@Override
+	public Filter getFilter() {
+		Filter filter = new Filter() {
+
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+				FilterResults filterResults = new FilterResults();
+
+				if(constraint == null || constraint.length() == 0) {
+					filterResults.values = mItems;
+					filterResults.count = mItems.size();
+				}
+				else {
+					ArrayList<AlarmItem> filteredRepoArray = new ArrayList<AlarmItem>();
+					
+					constraint = constraint.toString().toLowerCase();
+					for(int i = 0; i < mItems.size(); ++i) {
+						String repoName = mItems.get(i).getRepositoryName();
+						if(repoName.toLowerCase().startsWith(constraint.toString())) {
+							filteredRepoArray.add(mItems.get(i));
+						}
+					}
+					
+					filterResults.count = filteredRepoArray.size();
+					filterResults.values = filteredRepoArray;
+				}
+				
+				return filterResults;
+			}
+
+			@Override
+			protected void publishResults(CharSequence constraint, FilterResults results) {
+				mItems = (List<AlarmItem>) results.values;
+				notifyDataSetChanged();
+			}
+			
+		};
+		
+		return filter;
 	}
 	
 

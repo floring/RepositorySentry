@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class NotificationReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "CommitNotificationReceiver";
-	
+
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
 
@@ -26,16 +26,27 @@ public class NotificationReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		String username = intent.getStringExtra("Username");
 		String repositoryName = intent.getStringExtra("RepositoryName");
-		
+
 		mNotificationIntent = new Intent(context, MainActivity.class);
+		// mNotificationIntent.putExtras(intent.getExtras());
 		mContentIntent = PendingIntent.getActivity(context, 0,
 				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 
-		CommitHistory commitHistory = new CommitHistory(context);
+		CommitHistoryParsing commitHistory = new CommitHistoryParsing(context);
 		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
 				.getCommitsHistory(username, repositoryName);
-		
+
 		CommitInspector inspector = CommitInspector.getInstance();
+		if (inspector.mDB == null) {
+			inspector.mDbHelper = new DatabaseOpenHelper(context);
+			inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+		} else {
+			if (!inspector.mDB.isOpen()) {
+				inspector.mDbHelper = new DatabaseOpenHelper(context);
+				inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+			}
+		}
+
 		ArrayList<HashMap<String, String>> newCommitsData = inspector
 				.getNewCommits(repositoryName, commitsInfo);
 
@@ -45,8 +56,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 			CharSequence tickerText = "You've got new commits!";
 			sendNotification(context, newCommitsData, contentText, tickerText);
 		}
-		
-		Log.i(TAG, "Sending commit notification at:"
+
+		Log.i(TAG, "New commits count: " + newCommitsData.size()
+				+ ". Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
 	}
 

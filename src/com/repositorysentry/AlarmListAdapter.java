@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class AlarmListAdapter extends BaseAdapter implements Filterable {
 	
 	private List<AlarmItem> mItems = new ArrayList<AlarmItem>();
-	private List<AlarmItem> mFilteredItems = new ArrayList<AlarmItem>();
+	private List<AlarmItem> mAllItems = new ArrayList<AlarmItem>();
 	
 	private final Context mContext;
 	
@@ -95,17 +95,17 @@ public class AlarmListAdapter extends BaseAdapter implements Filterable {
 				FilterResults filterResults = new FilterResults();
 
 				if(constraint == null || constraint.length() == 0) {
-					filterResults.values = mItems;
-					filterResults.count = mItems.size();
+					filterResults.values = mAllItems;
+					filterResults.count = mAllItems.size();
 				}
 				else {
 					ArrayList<AlarmItem> filteredRepoArray = new ArrayList<AlarmItem>();
 					
 					constraint = constraint.toString().toLowerCase();
-					for(int i = 0; i < mItems.size(); ++i) {
-						String repoName = mItems.get(i).getRepositoryName();
+					for(int i = 0; i < mAllItems.size(); ++i) {
+						String repoName = mAllItems.get(i).getRepositoryName();
 						if(repoName.toLowerCase().startsWith(constraint.toString())) {
-							filteredRepoArray.add(mItems.get(i));
+							filteredRepoArray.add(mAllItems.get(i));
 						}
 					}
 					
@@ -125,6 +125,13 @@ public class AlarmListAdapter extends BaseAdapter implements Filterable {
 		};
 		
 		return filter;
+	}
+	
+	
+	// Save all Alarm Items before filtering
+	// mAllItems that sort of buffer
+	public void saveItems() {
+		mAllItems = mItems;
 	}
 	
 

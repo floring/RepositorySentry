@@ -9,6 +9,6 @@
     
     <!-- Alarm List Fragment Strings -->
     <string name="alarm_list_button_create">Create</string>
-    <string name="alarm_list_filter_hint">Title Filter...</string>
+    <string name="alarm_list_filter_hint">Repository Filter...</string>
 
 </resources>

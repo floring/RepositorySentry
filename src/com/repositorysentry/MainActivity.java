@@ -47,6 +47,8 @@ public class MainActivity extends Activity {
 	private static final int CREATE_ALARM_ITEM_REQUEST = 0;
 	private static final int MENU_DELETE = Menu.FIRST;
 	private static final String FILE_NAME = "AlarmsActivityData.txt";
+	
+	private EditText etAlarmItemsFilter;
 
 	private AlarmListAdapter mAlarmAdapter;
 	private AlarmManager mAlarmManager;
@@ -100,21 +102,21 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		final EditText etAlarmItemsFilter = (EditText) findViewById(R.id.edittext_alarm_listview_filter);
+		etAlarmItemsFilter = (EditText) findViewById(R.id.edittext_alarm_listview_filter);
 		etAlarmItemsFilter.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				MainActivity.this.mAlarmAdapter.getFilter().filter(s);
-
+				mAlarmAdapter.getFilter().filter(s);
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-
+				if(s.length() == 0) {
+					mAlarmAdapter.saveItems();
+				}
 			}
 
 			@Override
@@ -157,8 +159,10 @@ public class MainActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 
-		// Save AlarmItems
-		saveItems();
+		// Save AlarmItems, unless they have been filtered
+		if(etAlarmItemsFilter.getText().length() == 0) {
+			saveItems();
+		}
 	}
 
 	@Override

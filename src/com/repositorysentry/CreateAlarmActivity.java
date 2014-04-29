@@ -25,7 +25,7 @@ public class CreateAlarmActivity extends Activity {
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
-	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
+	private static final long INITIAL_ALARM_DELAY = 15 * 60 * 1000L;
 
 	private final Long[] ALARM_INTERVAL = {
 			AlarmManager.INTERVAL_FIFTEEN_MINUTES,

@@ -26,8 +26,10 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,15 +47,15 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	private static final int CREATE_ALARM_ITEM_REQUEST = 0;
-	private static final int MENU_DELETE = Menu.FIRST;
-	private static final String FILE_NAME = "AlarmsActivityData.txt";
+	private static final String FILE_NAME = "AlarmsActivityData.txt";	
 	
-	private EditText etAlarmItemsFilter;
+	private static long alarmInterval;
 
 	private AlarmListAdapter mAlarmAdapter;
 	private AlarmManager mAlarmManager;
 	private GestureDetector mGestureDetector;
 	private ListView mAlarmItems;
+	private EditText etAlarmItemsFilter;
 
 	private CommitInspector mInspector;
 
@@ -72,6 +74,9 @@ public class MainActivity extends Activity {
 
 		mAlarmItems = (ListView) findViewById(android.R.id.list);
 		mAlarmItems.setAdapter(mAlarmAdapter);
+		
+		// TODO: Get and set default alarm interval 
+		alarmInterval = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -90,7 +95,7 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		final Button buttonCreateAlarm = (Button) findViewById(R.id.button_alarm_list_create);
+		/*final Button buttonCreateAlarm = (Button) findViewById(R.id.button_alarm_list_create);
 		buttonCreateAlarm.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -100,7 +105,7 @@ public class MainActivity extends Activity {
 						CreateAlarmActivity.class);
 				startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
 			}
-		});
+		});*/
 
 		etAlarmItemsFilter = (EditText) findViewById(R.id.edittext_alarm_listview_filter);
 		etAlarmItemsFilter.addTextChangedListener(new TextWatcher() {
@@ -167,7 +172,6 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO: close database
 		if (mInspector.mDB != null) {
 			if (mInspector.mDB.isOpen()) {
 				mInspector.mDB.close();
@@ -180,22 +184,87 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
-		menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "Delete all");
-		return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_DELETE:
-			mAlarmAdapter.clearAll();
-			resetAllSentries();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.action_create:
+				Intent intent = new Intent(MainActivity.this,
+						CreateAlarmActivity.class);
+				intent.putExtra("Interval", alarmInterval);
+				startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
+				return true;
+			case R.id.action_reset_all:
+				mAlarmAdapter.clearAll();
+				resetAllSentries();
+				return true;
+			case R.id.option_15_min:
+				if(!item.isChecked()) {
+					changeSentriesTriggerPeriod(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+					item.setChecked(true);
+				}
+				return true;
+			case R.id.option_30_min:
+				if(!item.isChecked()) {
+					changeSentriesTriggerPeriod(AlarmManager.INTERVAL_HALF_HOUR);
+					item.setChecked(true);
+				}
+				return true;
+			case R.id.option_1_hour:
+				if(!item.isChecked()) {
+					changeSentriesTriggerPeriod(AlarmManager.INTERVAL_HOUR);
+					item.setChecked(true);
+				}
+				return true;
+			case R.id.option_2_hour:
+				if(!item.isChecked()) {
+					changeSentriesTriggerPeriod(AlarmManager.INTERVAL_HOUR * 2);
+					item.setChecked(true);
+				}
+				return true;
+			case R.id.option_1_day:
+				if(!item.isChecked()) {
+					changeSentriesTriggerPeriod(AlarmManager.INTERVAL_DAY);
+					item.setChecked(true);
+				}
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void changeSentriesTriggerPeriod(final long interval) {
+		if(!mAlarmAdapter.isEmpty()) {
+			AlertDialog.Builder dialog = new AlertDialog.Builder(
+					MainActivity.this);
+			dialog.setTitle("Change triggering period");
+			dialog.setMessage("Are you sure you want to change trigger period to all sentries?");
+			dialog.setNegativeButton("Cancel", null);
+			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					alarmInterval = interval;
+					for (int i = 0; i < mAlarmAdapter.getCount(); i++) {
+						AlarmItem alarmItem = (AlarmItem) mAlarmAdapter
+								.getItem(i);
+						PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
+						
+						mAlarmManager.cancel(pendingNoteIntent);
+						
+						// TODO: change setRepeating to setInexactRepeating
+						mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+								SystemClock.elapsedRealtime(), alarmInterval,
+								pendingNoteIntent);
+					}
+				}
+			});
+			dialog.show();
+		}		
 	}
 
 	private PendingIntent composeRequiredIntent(AlarmItem alarmItem) {
@@ -213,27 +282,32 @@ public class MainActivity extends Activity {
 	}
 
 	private void resetAllSentries() {
-		AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-		dialog.setTitle("Delete sentries");
-		dialog.setMessage("Are you sure you want to delete all sentries?");
-		dialog.setNegativeButton("Cancel", null);
-		dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+		if (!mAlarmAdapter.isEmpty()) {
+			AlertDialog.Builder dialog = new AlertDialog.Builder(
+					MainActivity.this);
+			dialog.setTitle("Delete sentries");
+			dialog.setMessage("Are you sure you want to delete all sentries?");
+			dialog.setNegativeButton("Cancel", null);
+			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface d, int which) {
-				for (int i = 0; i < mAlarmAdapter.getCount(); i++) {
-					AlarmItem alarmItem = (AlarmItem) mAlarmAdapter.getItem(i);
-					PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
+				@Override
+				public void onClick(DialogInterface d, int which) {
+					for (int i = 0; i < mAlarmAdapter.getCount(); i++) {
+						AlarmItem alarmItem = (AlarmItem) mAlarmAdapter
+								.getItem(i);
+						PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
 
-					mAlarmManager.cancel(pendingNoteIntent);
+						mAlarmManager.cancel(pendingNoteIntent);
+					}
+					mAlarmAdapter.notifyDataSetChanged();
+
+					Toast.makeText(getApplicationContext(),
+							"All sentries has been deleted",
+							Toast.LENGTH_SHORT).show();
 				}
-				mAlarmAdapter.notifyDataSetChanged();
-			}
-		});
-		dialog.show();
-
-		Toast.makeText(getApplicationContext(),
-				"All sentries has been cancelled", Toast.LENGTH_SHORT).show();
+			});
+			dialog.show();
+		}
 	}
 
 	// Load stored AlarmItems
@@ -332,6 +406,8 @@ public class MainActivity extends Activity {
 				Toast.makeText(getApplicationContext(),
 						"Sentry to '" + repoName + "' has been cancelled",
 						Toast.LENGTH_SHORT).show();
+				
+				return true;
 			}
 			return false;
 		}

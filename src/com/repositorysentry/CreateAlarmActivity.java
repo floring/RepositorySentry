@@ -21,11 +21,13 @@ public class CreateAlarmActivity extends Activity {
 
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
+	private static long ALARM_DELAY;
+	private static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
 	private PendingIntent mContentIntent;
-	private static final long INITIAL_ALARM_DELAY = 15 * 60 * 1000L;
+	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 
 	private final Long[] ALARM_INTERVAL = {
 			AlarmManager.INTERVAL_FIFTEEN_MINUTES,
@@ -41,6 +43,8 @@ public class CreateAlarmActivity extends Activity {
 
 		mUsernameText = (EditText) findViewById(R.id.edittext_username);
 		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
+
+		ALARM_DELAY = getIntent().getLongExtra("Interval", DEFAULT_ALARM_DELAY);
 
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);
@@ -98,7 +102,7 @@ public class CreateAlarmActivity extends Activity {
 
 		// mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
 		// SystemClock.elapsedRealtime(),
-		// mFiringInterval, mContentIntent);
+		// ALARM_DELAY, mContentIntent);
 
 		Toast.makeText(getApplicationContext(), "Repository Sentry Set",
 				Toast.LENGTH_LONG).show();

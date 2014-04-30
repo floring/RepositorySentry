@@ -2,10 +2,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.repositorysentry.MainActivity" >
 
+    <group 
+        android:checkableBehavior="single" >
+        <item
+            android:id="@+id/option_15_min"
+            android:title="@string/option_15_min"
+            android:checked="true"/>
+        <item
+            android:id="@+id/option_30_min"
+            android:title="@string/option_30_min"/>
+        <item
+            android:id="@+id/option_1_hour"
+            android:title="@string/option_1_hour"/>
+        <item
+            android:id="@+id/option_2_hour"
+            android:title="@string/option_2_hour"/>
+        <item
+            android:id="@+id/option_1_day"
+            android:title="@string/option_1_day"/>
+    </group>
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:id="@+id/action_create"
+        android:icon="@drawable/ic_action_create"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_create"/>
+    <item
+        android:id="@+id/action_reset_all"
+        android:icon="@drawable/ic_action_reset_all"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_reset_all"/>
 
 </menu>

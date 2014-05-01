@@ -25,6 +25,7 @@ import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.GestureDetector;
@@ -45,9 +46,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+	
+	public static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
 	private static final int CREATE_ALARM_ITEM_REQUEST = 0;
-	private static final String FILE_NAME = "AlarmsActivityData.txt";	
+	private static final String FILE_ALARMS = "AlarmsActivityData.txt";	
+	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 	
 	private static long alarmInterval;
 
@@ -75,8 +79,9 @@ public class MainActivity extends Activity {
 		mAlarmItems = (ListView) findViewById(android.R.id.list);
 		mAlarmItems.setAdapter(mAlarmAdapter);
 		
-		// TODO: Get and set default alarm interval 
-		alarmInterval = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
+		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -172,6 +177,14 @@ public class MainActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
+		
+		// Commit application preferences
+		SharedPreferences settings = getSharedPreferences(APP_SETTINGS, MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong("alarmInterval", alarmInterval);
+		editor.commit();
+		
+		// Close database
 		if (mInspector.mDB != null) {
 			if (mInspector.mDB.isOpen()) {
 				mInspector.mDB.close();
@@ -186,6 +199,17 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
+
+		if (alarmInterval == AlarmManager.INTERVAL_FIFTEEN_MINUTES)
+			menu.findItem(R.id.option_15_min).setChecked(true);
+		else if (alarmInterval == AlarmManager.INTERVAL_HALF_HOUR)
+			menu.findItem(R.id.option_30_min).setChecked(true);
+		else if (alarmInterval == AlarmManager.INTERVAL_HOUR)
+			menu.findItem(R.id.option_1_hour).setChecked(true);
+		else if (alarmInterval == AlarmManager.INTERVAL_HOUR * 2)
+			menu.findItem(R.id.option_2_hour).setChecked(true);
+		else if (alarmInterval == AlarmManager.INTERVAL_DAY)
+			menu.findItem(R.id.option_1_day).setChecked(true);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -314,7 +338,7 @@ public class MainActivity extends Activity {
 	private void loadItems() {
 		BufferedReader reader = null;
 		try {
-			FileInputStream fis = openFileInput(FILE_NAME);
+			FileInputStream fis = openFileInput(FILE_ALARMS);
 			reader = new BufferedReader(new InputStreamReader(fis));
 
 			String username = null;
@@ -348,7 +372,7 @@ public class MainActivity extends Activity {
 	private void saveItems() {
 		PrintWriter writer = null;
 		try {
-			FileOutputStream fos = openFileOutput(FILE_NAME, MODE_PRIVATE);
+			FileOutputStream fos = openFileOutput(FILE_ALARMS, MODE_PRIVATE);
 			writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
 					fos)));
 

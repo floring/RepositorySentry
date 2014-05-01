@@ -6,8 +6,7 @@
         android:checkableBehavior="single" >
         <item
             android:id="@+id/option_15_min"
-            android:title="@string/option_15_min"
-            android:checked="true"/>
+            android:title="@string/option_15_min"/>
         <item
             android:id="@+id/option_30_min"
             android:title="@string/option_30_min"/>

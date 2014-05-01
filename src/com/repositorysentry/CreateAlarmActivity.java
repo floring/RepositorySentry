@@ -22,7 +22,6 @@ public class CreateAlarmActivity extends Activity {
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
 	private static long ALARM_DELAY;
-	private static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
 	private AlarmManager mAlarmManager;
 	private Intent mNotificationIntent;
@@ -44,7 +43,7 @@ public class CreateAlarmActivity extends Activity {
 		mUsernameText = (EditText) findViewById(R.id.edittext_username);
 		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
 
-		ALARM_DELAY = getIntent().getLongExtra("Interval", DEFAULT_ALARM_DELAY);
+		ALARM_DELAY = getIntent().getLongExtra("Interval", MainActivity.DEFAULT_ALARM_DELAY);
 
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);

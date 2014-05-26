@@ -32,6 +32,9 @@ public class CommitHistoryParsing {
 		String url = String.format(
 				"https://api.github.com/repos/%s/%s/commits", username,
 				repoName);
+		//String url = String.format(
+			//	"https://api.bitbucket.org/1.0/repositories/%s/%s/changesets", "poiuj",
+				//"Cryptography_lab1");
 
 		HttpGetTask task = new HttpGetTask();
 		task.execute(url);

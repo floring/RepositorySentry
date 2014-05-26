@@ -95,13 +95,12 @@ public class CreateAlarmActivity extends Activity {
 
 		// TODO: change 2nd parameter to SystemClock.elapsedRealtime() +
 		// INITIAL_ALARM_DELAY
-		mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime(), INITIAL_ALARM_DELAY,
-				mContentIntent);
+		//mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+			//	SystemClock.elapsedRealtime(), INITIAL_ALARM_DELAY,
+				//mContentIntent);
 
-		// mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-		// SystemClock.elapsedRealtime(),
-		// ALARM_DELAY, mContentIntent);
+		mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+				SystemClock.elapsedRealtime(), ALARM_DELAY, mContentIntent);
 
 		Toast.makeText(getApplicationContext(), "Repository Sentry Set",
 				Toast.LENGTH_LONG).show();

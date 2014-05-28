@@ -223,8 +223,8 @@ public class MainActivity extends Activity {
 				startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
 				return true;
 			case R.id.action_reset_all:
-				mAlarmAdapter.clearAll();
 				resetAllSentries();
+				mAlarmAdapter.clearAll();				
 				return true;
 			case R.id.option_15_min:
 				if(!item.isChecked()) {

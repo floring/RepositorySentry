@@ -28,11 +28,6 @@ public class CreateAlarmActivity extends Activity {
 	private PendingIntent mContentIntent;
 	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 
-	private final Long[] ALARM_INTERVAL = {
-			AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-			AlarmManager.INTERVAL_HALF_HOUR, AlarmManager.INTERVAL_HOUR,
-			AlarmManager.INTERVAL_HALF_DAY, AlarmManager.INTERVAL_DAY };
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

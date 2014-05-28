@@ -280,8 +280,7 @@ public class MainActivity extends Activity {
 						
 						mAlarmManager.cancel(pendingNoteIntent);
 						
-						// TODO: change setRepeating to setInexactRepeating
-						mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+						mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
 								SystemClock.elapsedRealtime(), alarmInterval,
 								pendingNoteIntent);
 					}

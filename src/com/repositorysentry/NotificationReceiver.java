@@ -51,7 +51,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 				.getNewCommits(repositoryName, commitsInfo);
 
 		if (!newCommitsData.isEmpty()) {
-			CharSequence contentText = "You've got " + newCommitsData.size()
+			CharSequence contentText = "In " + repositoryName + "you've got " + newCommitsData.size()
 					+ " new commits";
 			CharSequence tickerText = "You've got new commits!";
 			sendNotification(context, newCommitsData, contentText, tickerText);

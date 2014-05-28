@@ -19,5 +19,6 @@
     <string name="option_1_hour">1 hour</string>
     <string name="option_2_hour">2 hour</string>
     <string name="option_1_day">1 day</string>
+    <string name="refresh_history">Refresh</string>
 
 </resources>

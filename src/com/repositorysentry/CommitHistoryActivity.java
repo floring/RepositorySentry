@@ -19,11 +19,19 @@ public class CommitHistoryActivity extends ListActivity {
 		Intent intent = getIntent();
 		String username = intent.getStringExtra("Username");
 		String repositoryName = intent.getStringExtra("RepositoryName");
-
-		CommitHistoryParsing commitHistory = new CommitHistoryParsing(
-				getApplicationContext());
-		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
-				.getCommitsHistory(username, repositoryName);
+		
+		CommitInspector inspector = CommitInspector.getInstance();
+		if (inspector.mDB == null) {
+			inspector.mDbHelper = new DatabaseOpenHelper(getApplicationContext());
+			inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+		} else {
+			if (!inspector.mDB.isOpen()) {
+				inspector.mDbHelper = new DatabaseOpenHelper(getApplicationContext());
+				inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+			}
+		}
+		ArrayList<HashMap<String, String>> commitsInfo = inspector
+				.getCommitsHistoryFromDB(repositoryName);
 
 		SimpleAdapter adapter = new SimpleAdapter(CommitHistoryActivity.this,
 				(ArrayList<HashMap<String, String>>) commitsInfo.clone(),

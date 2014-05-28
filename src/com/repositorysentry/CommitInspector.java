@@ -46,6 +46,34 @@ public class CommitInspector {
 		return mNewComitsData;
 	}
 
+	public ArrayList<HashMap<String, String>> getCommitsHistoryFromDB(
+			String repoName) {
+		ArrayList<HashMap<String, String>> commitsList = new ArrayList<HashMap<String, String>>();
+
+		String[] columns = new String[] { DatabaseOpenHelper.NAME_COLUMN,
+				DatabaseOpenHelper.DATE_COLUMN,
+				DatabaseOpenHelper.MESSAGE_COLUMN };
+		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=?";
+		String[] whereArgs = new String[] { repoName };
+
+		Cursor cursor = mDB.query(DatabaseOpenHelper.TABLE_NAME, columns,
+				whereClause, whereArgs, null, null, null);
+		
+		int columnNameId = cursor.getColumnIndex(DatabaseOpenHelper.NAME_COLUMN);
+		int columnDateId = cursor.getColumnIndex(DatabaseOpenHelper.DATE_COLUMN);
+		int columnMsgId = cursor.getColumnIndex(DatabaseOpenHelper.MESSAGE_COLUMN);
+
+		while (cursor.moveToNext()) {
+			HashMap<String, String> commitInfo = new HashMap<String, String>();
+			commitInfo.put(CommitHistoryParsing.NAME_TAG, cursor.getString(columnNameId));
+			commitInfo.put(CommitHistoryParsing.DATE_TAG, cursor.getString(columnDateId));
+			commitInfo.put(CommitHistoryParsing.MESSAGE_TAG, cursor.getString(columnMsgId));
+			commitsList.add(commitInfo);
+		}
+		cursor.close();
+		return commitsList;
+	}
+
 	public void removeRepositoryRowsFromDB(String repoName) {
 		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=?";
 		String[] whereArgs = new String[] { repoName };

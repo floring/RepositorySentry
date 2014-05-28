@@ -51,10 +51,10 @@ public class NotificationReceiver extends BroadcastReceiver {
 				.getNewCommits(repositoryName, commitsInfo);
 
 		if (!newCommitsData.isEmpty()) {
-			CharSequence contentText = "In " + repositoryName + "you've got " + newCommitsData.size()
+			CharSequence contentText = "You've got " + newCommitsData.size()
 					+ " new commits";
 			CharSequence tickerText = "You've got new commits!";
-			sendNotification(context, newCommitsData, contentText, tickerText);
+			sendNotification(context, newCommitsData, contentText, tickerText, repositoryName);
 		}
 
 		Log.i(TAG, "New commits count: " + newCommitsData.size()
@@ -64,8 +64,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	private void sendNotification(Context context,
 			ArrayList<HashMap<String, String>> newCommitsData,
-			CharSequence contentText, CharSequence tickerText) {
-		CharSequence contentTitle = "New Commits";
+			CharSequence contentText, CharSequence tickerText, String repositoryName) {
+		CharSequence contentTitle = repositoryName;
 
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);

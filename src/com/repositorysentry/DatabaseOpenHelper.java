@@ -22,7 +22,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 			+ MESSAGE_COLUMN + " TEXT)";
 
 	final private Context mContext;
-	final private static String NAME = "reposentry_db";
+	final private static String NAME = "reposentry_db.db";
 	final private static Integer VERSION = 1;
 
 	public DatabaseOpenHelper(Context context) {

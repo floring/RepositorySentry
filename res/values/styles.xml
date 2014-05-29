@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -14,7 +14,31 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:actionBarStyle">@style/MyApp.ActionBar</item>
+        <item name="android:textColor">@color/app_name_text</item>
     </style>
 
+    <style name="MyApp.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@color/action_bar_background</item>
+    </style>
+
+    <!-- Buttons theme-->
+    <style name="Button">
+        <item name="android:background">@drawable/buttons</item>
+        <item name="android:textColor">@color/btn_text</item>
+        <item name="android:textSize">@dimen/btn_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- Header Text theme-->
+    <style name="Header">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textColor">@color/header_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- ListView Items theme-->
+    <style name="ListItem">
+        <item name="android:textColor">@color/item_text</item>
+    </style>
 </resources>

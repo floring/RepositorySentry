@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="btn_end_color">#255F95</color>
+    <color name="btn_start_color">#449def</color>
+    <color name="btn_text">#FFFFFF</color>
+    
+    <color name="header_text">#255F95</color>
+    <color name="item_text">#034584</color>
+    
+    <color name="action_bar_background">#33b5e5</color>
+    <color name="app_name_text">#cff1ff</color> 
+    
+</resources>

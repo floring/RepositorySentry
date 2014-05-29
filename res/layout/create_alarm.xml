@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
-        android:textAppearance="?android:attr/textAppearanceLarge" >
+        style="@style/Header">
     </TextView>
 
     <EditText
@@ -40,7 +40,7 @@
         android:layout_below="@+id/edittext_username"
         android:layout_marginTop="25dp"
         android:text="Repository Name"
-        android:textAppearance="?android:attr/textAppearanceLarge" >
+        style="@style/Header">
     </TextView>
 
     <EditText
@@ -62,18 +62,22 @@
 
     <Button
         android:id="@+id/button_clear"
-        android:layout_width="wrap_content"
+        style="@style/Button"
+        android:layout_width="@dimen/btn_width"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
+        android:minHeight="@dimen/btn_height"
         android:text="Clear" />
 
     <Button
         android:id="@+id/button_set_alarm"
-        android:layout_width="wrap_content"
+        style="@style/Button"
+        android:layout_width="@dimen/btn_width"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:minHeight="@dimen/btn_height"
         android:text="Set" />
 
 </RelativeLayout>

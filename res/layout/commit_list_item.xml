@@ -10,19 +10,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold" 
+        style="@style/ListItem"/>
  
     <TextView
         android:id="@+id/commitDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
-        android:textSize="14sp"/>
+        android:textSize="14sp"
+        style="@style/ListItem"/>
  
     <TextView
         android:id="@+id/commitMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        style="@style/ListItem"/>
 
 </LinearLayout>

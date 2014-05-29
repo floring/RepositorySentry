@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- pressed state -->
+    <item android:state_pressed="true"><shape>
+            <solid android:color="@color/btn_start_color" />
+
+            <padding android:bottom="@dimen/btn_text_padding" android:left="@dimen/btn_text_padding" android:right="@dimen/btn_text_padding" android:top="@dimen/btn_text_padding" />
+        </shape></item>
+
+    <!-- normal state -->
+    <item><shape>
+            <gradient android:angle="270" android:endColor="@color/btn_end_color" android:startColor="@color/btn_start_color" android:type="linear"/>
+
+            <padding android:bottom="@dimen/btn_text_padding" android:left="@dimen/btn_text_padding" android:right="@dimen/btn_text_padding" android:top="@dimen/btn_text_padding" />
+        </shape></item>
+
+</selector>

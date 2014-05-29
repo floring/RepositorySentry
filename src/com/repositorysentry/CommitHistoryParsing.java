@@ -1,6 +1,8 @@
 package com.repositorysentry;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -18,6 +20,7 @@ public class CommitHistoryParsing {
 	public static final String NAME_TAG = "name";
 	public static final String DATE_TAG = "date";
 	public static final String REPOSITORY_TAG = "repository";
+	public static final String LETTERS = "[A-Za-z]";
 
 	private Context mContext;
 	private ArrayList<HashMap<String, String>> mComitsData = new ArrayList<HashMap<String, String>>();
@@ -63,6 +66,7 @@ public class CommitHistoryParsing {
 					jsonObject = jsonObject.getJSONObject(COMMITER_TAG);
 					String name = jsonObject.getString(NAME_TAG);
 					String date = jsonObject.getString(DATE_TAG);
+					date = date.replaceAll(LETTERS, " ");			
 
 					HashMap<String, String> commitInfo = new HashMap<String, String>();
 					commitInfo.put(NAME_TAG, name);

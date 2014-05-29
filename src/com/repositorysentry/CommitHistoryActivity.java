@@ -13,6 +13,12 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 public class CommitHistoryActivity extends ListActivity {
+	
+	private String mUsername;
+	private String mRepositoryName;
+	private CommitInspector mInspector = CommitInspector.getInstance();
+	private ArrayList<HashMap<String, String>> mCommitList = new ArrayList<HashMap<String,String>>();
+	private SimpleAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -20,34 +26,22 @@ public class CommitHistoryActivity extends ListActivity {
 		setContentView(R.layout.commit_history_listview);
 
 		Intent intent = getIntent();
-		String username = intent.getStringExtra("Username");
-		String repositoryName = intent.getStringExtra("RepositoryName");
+		mUsername = intent.getStringExtra("Username");
+		mRepositoryName = intent.getStringExtra("RepositoryName");
 
-		CommitInspector inspector = CommitInspector.getInstance();
-		if (inspector.mDB == null) {
-			inspector.mDbHelper = new DatabaseOpenHelper(
-					getApplicationContext());
-			inspector.mDB = inspector.mDbHelper.getWritableDatabase();
-		} else {
-			if (!inspector.mDB.isOpen()) {
-				inspector.mDbHelper = new DatabaseOpenHelper(
-						getApplicationContext());
-				inspector.mDB = inspector.mDbHelper.getWritableDatabase();
-			}
-		}
-		ArrayList<HashMap<String, String>> commitsInfo = inspector
-				.getCommitsHistoryFromDB(repositoryName);
-
-		SimpleAdapter adapter = new SimpleAdapter(CommitHistoryActivity.this,
-				(ArrayList<HashMap<String, String>>) commitsInfo.clone(),
+		mCommitList = mInspector
+				.getCommitsHistoryFromDB(mRepositoryName);
+	
+		mAdapter = new SimpleAdapter(CommitHistoryActivity.this,
+				mCommitList,
 				R.layout.commit_list_item, new String[] {
 						CommitHistoryParsing.NAME_TAG,
 						CommitHistoryParsing.DATE_TAG,
 						CommitHistoryParsing.MESSAGE_TAG },
-				new int[] { R.id.commiterName, R.id.commitDate,
+				new int[] { R.id.commiterName, R.id.commitDate, 
 						R.id.commitMessage });
 		ListView listView = (ListView) findViewById(android.R.id.list);
-		listView.setAdapter(adapter);
+		listView.setAdapter(mAdapter);
 	}
 
 	@Override
@@ -62,9 +56,23 @@ public class CommitHistoryActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
+			refreshCommitHistory();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void refreshCommitHistory() {
+		CommitHistoryParsing commitHistory = new CommitHistoryParsing(this);
+		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
+				.getCommitsHistory(mUsername, mRepositoryName);
+		
+		refreshAdapter(commitsInfo);
+	}
+	
+	private void refreshAdapter(ArrayList<HashMap<String, String>> commits) {		
+		mCommitList = commits;
+		mAdapter.notifyDataSetChanged();
 	}
 }

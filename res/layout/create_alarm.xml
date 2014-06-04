@@ -25,7 +25,7 @@
         android:ems="10"
         android:hint="Enter account username"
         android:inputType="textShortMessage"
-        android:text="floring" >
+        android:text="floring">
 
         <requestFocus />
     </EditText>
@@ -53,7 +53,8 @@
         android:ems="10"
         android:hint="Enter repository name you want to check"
         android:inputType="textShortMessage"
-        android:text="RepositorySentry" >
+        android:text="RepositorySentry" 
+       >
 
         <requestFocus />
     </EditText>

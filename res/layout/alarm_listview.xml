@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:layout_marginTop="10dp"
-        android:hint="@string/alarm_list_filter_hint" >
+        android:hint="@string/alarm_list_filter_hint" 
+        >
 
         <requestFocus />
     </EditText>

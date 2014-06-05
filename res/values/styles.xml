@@ -16,16 +16,22 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:actionBarStyle">@style/MyApp.ActionBar</item>
         <item name="android:textColor">@color/app_text</item>   
+        <item name="android:itemTextAppearance">@style/MyTheme.Menu.ItemText</item>
     </style>
     
     <style name="MyApp.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
         <item name="android:background">@color/action_bar_background</item>
         <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+        
     </style>
 
     <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/app_title_text</item>
     </style>  
+    
+    <style name="MyTheme.Menu.ItemText" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="android:textColor">@color/app_title_text</item>
+    </style> 
 
     <!-- Buttons theme-->
     <style name="Button">

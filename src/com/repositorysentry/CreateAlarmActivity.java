@@ -22,12 +22,9 @@ public class CreateAlarmActivity extends Activity {
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
 	private Spinner mSpinnerVcs;
-	private static long ALARM_DELAY;
-
-	private AlarmManager mAlarmManager;
-	private Intent mNotificationIntent;
-	private PendingIntent mContentIntent;
-	private static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
+	
+	public static long ALARM_DELAY;
+	public static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,8 +35,6 @@ public class CreateAlarmActivity extends Activity {
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.vcs, R.layout.vsc_dropdown_item);
 		mSpinnerVcs.setAdapter(adapter);
 		mSpinnerVcs.setSelection(0);
-
-		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 		mUsernameText = (EditText) findViewById(R.id.edittext_username);
 		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
@@ -63,11 +58,12 @@ public class CreateAlarmActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
+				int id = PoolRepositories.getLastId();
 				String username = mUsernameText.getText().toString();
 				String repositoryName = mRepositoryText.getText().toString();
 
-				createAlarmItem(username, repositoryName);
-				setAlarm(username, repositoryName);
+				createAlarmItem(id, username, repositoryName);				
+				createRepositoryItem(id, username, repositoryName);
 
 				finish();
 			}
@@ -75,37 +71,28 @@ public class CreateAlarmActivity extends Activity {
 
 	}
 
-	private void createAlarmItem(String username, String repositoryName) {
+	private void createAlarmItem(int id, String username, String repositoryName) {
 		String creationDate = getDateString();
 		Intent data = new Intent();
-		AlarmItem.packageIntent(data, username, repositoryName, creationDate);
+		AlarmItem.packageIntent(data, username, repositoryName, creationDate, id);
 		setResult(RESULT_OK, data);
 	};
-
-	private void setAlarm(String username, String repositoryName) {
-
-		Bundle bundle = new Bundle();
-		bundle.putString("Username", username);
-		bundle.putString("RepositoryName", repositoryName);
-		mNotificationIntent = new Intent(getApplicationContext(),
-				NotificationReceiver.class);
-		mNotificationIntent.putExtras(bundle);
-
-		mContentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
-				mNotificationIntent, 0);
-
-		// TODO: change 2nd parameter to SystemClock.elapsedRealtime() +
-		// INITIAL_ALARM_DELAY
-		//mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
-			//	SystemClock.elapsedRealtime(), INITIAL_ALARM_DELAY,
-				//mContentIntent);
-
-		mAlarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime(), INITIAL_ALARM_DELAY, mContentIntent);
-
-		Toast.makeText(getApplicationContext(), "Repository Sentry Set",
-				Toast.LENGTH_LONG).show();
+	
+	private void createRepositoryItem(int id, String username, String repositoryName) {
+		Repository repository = null;
+		switch(mSpinnerVcs.getSelectedItemPosition()) {
+			case 0:
+				repository = new GitRepository(getApplicationContext(), id, username, repositoryName);
+				break;
+			case 1:
+				repository = new BitbucketRepository(getApplicationContext(), id, username, repositoryName);
+				break;
+		}
+		repository.setAlarm();
+		PoolRepositories pool = PoolRepositories.getInstance();
+		pool.add(repository);
 	}
+
 
 	private String getDateString() {
 		Calendar c = Calendar.getInstance();

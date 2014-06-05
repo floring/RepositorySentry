@@ -101,18 +101,6 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		/*
-		 * final Button buttonCreateAlarm = (Button)
-		 * findViewById(R.id.button_alarm_list_create);
-		 * buttonCreateAlarm.setOnClickListener(new OnClickListener() {
-		 * 
-		 * @Override public void onClick(View arg0) {
-		 * 
-		 * Intent intent = new Intent(MainActivity.this,
-		 * CreateAlarmActivity.class); startActivityForResult(intent,
-		 * CREATE_ALARM_ITEM_REQUEST); } });
-		 */
-
 		etAlarmItemsFilter = (EditText) findViewById(R.id.edittext_alarm_listview_filter);
 		etAlarmItemsFilter.addTextChangedListener(new TextWatcher() {
 
@@ -348,11 +336,12 @@ public class MainActivity extends Activity {
 			String username = null;
 			String repository = null;
 			Date date = null;
+			int repoId = 0;
 
 			while (null != (username = reader.readLine())) {
 				repository = reader.readLine();
 				date = AlarmItem.FORMAT.parse(reader.readLine());
-				mAlarmAdapter.add(new AlarmItem(username, repository, date));
+				mAlarmAdapter.add(new AlarmItem(username, repository, date, repoId));
 			}
 
 		} catch (FileNotFoundException e) {
@@ -427,7 +416,7 @@ public class MainActivity extends Activity {
 				PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
 				mAlarmManager.cancel(pendingNoteIntent);
 
-				mInspector.removeRepositoryRowsFromDB(repoName);
+				mInspector.removeRepositoryRowsFromDB(String.valueOf(alarmItem.getRepositoryId()));
 
 				mAlarmAdapter.removeItem(positionToRemove);
 				mAlarmAdapter.notifyDataSetChanged();
@@ -448,8 +437,7 @@ public class MainActivity extends Activity {
 					.getItem(itemPosition);
 
 			Bundle bundle = new Bundle();
-			bundle.putString("Username", alarmItem.getUsername());
-			bundle.putString("RepositoryName", alarmItem.getRepositoryName());
+			bundle.putInt("Id", alarmItem.getRepositoryId());
 			Intent commitHistoryIntent = new Intent(getApplicationContext(),
 					CommitHistoryActivity.class);
 			commitHistoryIntent.putExtras(bundle);

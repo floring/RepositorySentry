@@ -24,18 +24,12 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		String username = intent.getStringExtra("Username");
-		String repositoryName = intent.getStringExtra("RepositoryName");
-
-		mNotificationIntent = new Intent(context, MainActivity.class);
-		// mNotificationIntent.putExtras(intent.getExtras());
-		mContentIntent = PendingIntent.getActivity(context, 0,
-				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-
-		CommitHistoryParsing commitHistory = new CommitHistoryParsing(context);
-		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
-				.getCommitsHistory(username, repositoryName);
-
+		int repoId =  intent.getIntExtra("Id", 0);
+		
+		PoolRepositories pool = PoolRepositories.getInstance();
+		Repository repository = pool.getRepository(repoId);
+		ArrayList<HashMap<String, String>> commitsData = repository.getCommitsHistory(); 
+		
 		CommitInspector inspector = CommitInspector.getInstance();
 		if (inspector.mDB == null) {
 			inspector.mDbHelper = new DatabaseOpenHelper(context);
@@ -48,13 +42,17 @@ public class NotificationReceiver extends BroadcastReceiver {
 		}
 
 		ArrayList<HashMap<String, String>> newCommitsData = inspector
-				.getNewCommits(repositoryName, commitsInfo);
-
+				.getNewCommits(String.valueOf(repoId), repository.getRepositoryName(), commitsData);
+		
 		if (!newCommitsData.isEmpty()) {
+			mNotificationIntent = new Intent(context, MainActivity.class);
+			mContentIntent = PendingIntent.getActivity(context, 0,
+					mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+			
 			CharSequence contentText = "You've got " + newCommitsData.size()
 					+ " new commits";
 			CharSequence tickerText = "You've got new commits!";
-			sendNotification(context, newCommitsData, contentText, tickerText, repositoryName);
+			sendNotification(context, newCommitsData, contentText, tickerText, repository.getRepositoryName());
 		}
 
 		Log.i(TAG, "New commits count: " + newCommitsData.size()

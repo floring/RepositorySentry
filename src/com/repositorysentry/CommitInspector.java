@@ -15,8 +15,7 @@ public class CommitInspector {
 	public SQLiteDatabase mDB = null;
 	private ArrayList<HashMap<String, String>> mNewComitsData = new ArrayList<HashMap<String, String>>();
 
-	private CommitInspector() {
-	}
+	private CommitInspector() { }
 
 	public static CommitInspector getInstance() {
 		if (mInspector == null) {
@@ -25,21 +24,21 @@ public class CommitInspector {
 		return mInspector;
 	}
 
-	public ArrayList<HashMap<String, String>> getNewCommits(String repoName,
+	public ArrayList<HashMap<String, String>> getNewCommits(String repoId, String repoName,
 			ArrayList<HashMap<String, String>> comitsHistory) {
 		mNewComitsData.clear();
 		for (HashMap<String, String> item : comitsHistory) {
-			String name = item.get(CommitHistoryParsing.NAME_TAG);
-			String date = item.get(CommitHistoryParsing.DATE_TAG);
-			String message = item.get(CommitHistoryParsing.MESSAGE_TAG);
-			if (!isRowExists(repoName, name, date, message)) {
-				long requestCode = insertRow(repoName, name, date, message);
+			String name = item.get(Repository.NAME_TAG);
+			String date = item.get(Repository.DATE_TAG);
+			String message = item.get(Repository.MESSAGE_TAG);
+			if (!isRowExists(repoId, repoName, name, date, message)) {
+				long requestCode = insertRow(repoId, repoName, name, date, message);
 
 				HashMap<String, String> commitInfo = new HashMap<String, String>();
-				commitInfo.put(CommitHistoryParsing.REPOSITORY_TAG, repoName);
-				commitInfo.put(CommitHistoryParsing.NAME_TAG, name);
-				commitInfo.put(CommitHistoryParsing.DATE_TAG, date);
-				commitInfo.put(CommitHistoryParsing.MESSAGE_TAG, message);
+				commitInfo.put(Repository.REPOSITORY_TAG, repoName);
+				commitInfo.put(Repository.NAME_TAG, name);
+				commitInfo.put(Repository.DATE_TAG, date);
+				commitInfo.put(Repository.MESSAGE_TAG, message);
 				mNewComitsData.add(commitInfo);
 			}
 		}
@@ -47,14 +46,14 @@ public class CommitInspector {
 	}
 
 	public ArrayList<HashMap<String, String>> getCommitsHistoryFromDB(
-			String repoName) {
+			String repoId) {
 		ArrayList<HashMap<String, String>> commitsList = new ArrayList<HashMap<String, String>>();
 
 		String[] columns = new String[] { DatabaseOpenHelper.NAME_COLUMN,
 				DatabaseOpenHelper.DATE_COLUMN,
 				DatabaseOpenHelper.MESSAGE_COLUMN };
-		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=?";
-		String[] whereArgs = new String[] { repoName };
+		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { repoId };
 
 		Cursor cursor = mDB.query(DatabaseOpenHelper.TABLE_NAME, columns,
 				whereClause, whereArgs, null, null, null);
@@ -65,32 +64,34 @@ public class CommitInspector {
 
 		while (cursor.moveToNext()) {
 			HashMap<String, String> commitInfo = new HashMap<String, String>();
-			commitInfo.put(CommitHistoryParsing.NAME_TAG, cursor.getString(columnNameId));
-			commitInfo.put(CommitHistoryParsing.DATE_TAG, cursor.getString(columnDateId));
-			commitInfo.put(CommitHistoryParsing.MESSAGE_TAG, cursor.getString(columnMsgId));
+			commitInfo.put(Repository.NAME_TAG, cursor.getString(columnNameId));
+			commitInfo.put(Repository.DATE_TAG, cursor.getString(columnDateId));
+			commitInfo.put(Repository.MESSAGE_TAG, cursor.getString(columnMsgId));
 			commitsList.add(commitInfo);
 		}
 		cursor.close();
 		return commitsList;
 	}
 
-	public void removeRepositoryRowsFromDB(String repoName) {
-		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=?";
-		String[] whereArgs = new String[] { repoName };
+	public void removeRepositoryRowsFromDB(String repoId) {
+		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { repoId };
 
 		mDB.delete(DatabaseOpenHelper.TABLE_NAME, whereClause, whereArgs);
 	}
 
-	private boolean isRowExists(String repositoryName, String name,
+	private boolean isRowExists(String repoId, String repositoryName, String name,
 			String date, String message) {
 		String[] columns = new String[] { DatabaseOpenHelper.REPOSITORY_COLUMN,
 				DatabaseOpenHelper.NAME_COLUMN, DatabaseOpenHelper.DATE_COLUMN,
-				DatabaseOpenHelper.MESSAGE_COLUMN };
+				DatabaseOpenHelper.MESSAGE_COLUMN,
+				DatabaseOpenHelper.REPOSITORY_ID_COLUMN };
 		String whereClause = DatabaseOpenHelper.REPOSITORY_COLUMN + "=? AND "
 				+ DatabaseOpenHelper.NAME_COLUMN + "=? AND "
 				+ DatabaseOpenHelper.DATE_COLUMN + "=? AND "
-				+ DatabaseOpenHelper.MESSAGE_COLUMN + "=?";
-		String[] whereArgs = new String[] { repositoryName, name, date, message };
+				+ DatabaseOpenHelper.MESSAGE_COLUMN + "=? AND "
+				+ DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { repositoryName, name, date, message, repoId };
 		Cursor cursor = mDB.query(DatabaseOpenHelper.TABLE_NAME, columns,
 				whereClause, whereArgs, null, null, null);
 		int rowsCount = cursor.getCount();
@@ -98,13 +99,14 @@ public class CommitInspector {
 		return (rowsCount > 0) ? true : false;
 	}
 
-	private long insertRow(String repositoryName, String name, String date,
+	private long insertRow(String repoId, String repositoryName, String name, String date,
 			String message) {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseOpenHelper.REPOSITORY_COLUMN, repositoryName);
 		values.put(DatabaseOpenHelper.NAME_COLUMN, name);
 		values.put(DatabaseOpenHelper.DATE_COLUMN, date);
 		values.put(DatabaseOpenHelper.MESSAGE_COLUMN, message);
+		values.put(DatabaseOpenHelper.REPOSITORY_ID_COLUMN, repoId);
 		return mDB.insert(DatabaseOpenHelper.TABLE_NAME, null, values);
 	}
 }

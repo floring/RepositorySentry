@@ -6,8 +6,7 @@
     
     <!-- **** Strings for List Fragment for each Relation **** -->
     
-    <!-- Alarm List Fragment Strings -->
-    <string name="alarm_list_button_create">Create</string>
+    <!-- Main Activity Strings -->
     <string name="alarm_list_filter_hint">Repository Filter&#8230;</string>
     
     <!-- Menu Strings -->
@@ -19,5 +18,19 @@
     <string name="option_2_hour">2 hour</string>
     <string name="option_1_day">1 day</string>
     <string name="refresh_history">Refresh</string>
+    
+    <!-- Create Alarm Strings -->
+    <string name="textview_username">Username</string>
+    <string name="edittext_username_hint">Enter account username</string>
+    <string name="textview_reponame">Repository Name</string>
+    <string name="edittext_reponame_hint">Enter repository name you want to check</string>
+    <string name="textview_vcs">Version System Control</string>
+    <string name="button_clear">Clear</string>
+    <string name="button_set">Set</string>
+    
+    <!-- Alarms Listview items. Unused. Just for screen layout check -->
+    <string name="textview_alarm_username">username</string>
+    <string name="textview_alarm_repository">repository</string>
+    <string name="textview_alarm_date">date</string>
 
 </resources>

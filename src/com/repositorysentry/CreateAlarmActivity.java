@@ -21,6 +21,7 @@ public class CreateAlarmActivity extends Activity {
 
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
+	private Spinner mSpinnerVcs;
 	private static long ALARM_DELAY;
 
 	private AlarmManager mAlarmManager;
@@ -32,6 +33,11 @@ public class CreateAlarmActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_alarm);
+		
+		mSpinnerVcs = (Spinner) findViewById(R.id.spinnerVcs);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.vcs, R.layout.vsc_dropdown_item);
+		mSpinnerVcs.setAdapter(adapter);
+		mSpinnerVcs.setSelection(0);
 
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 

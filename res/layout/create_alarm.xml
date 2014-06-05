@@ -9,10 +9,10 @@
 
     <TextView
         android:id="@+id/textview_label_username"
+        style="@style/Header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username"
-        style="@style/Header">
+        android:text="@string/textview_username" >
     </TextView>
 
     <EditText
@@ -23,9 +23,9 @@
         android:layout_below="@+id/textview_label_username"
         android:layout_marginTop="14dp"
         android:ems="10"
-        android:hint="Enter account username"
+        android:hint="@string/edittext_username_hint"
         android:inputType="textShortMessage"
-        android:text="floring">
+        android:text="floring" >
 
         <requestFocus />
     </EditText>
@@ -34,13 +34,13 @@
 
     <TextView
         android:id="@+id/textview_label_repository"
+        style="@style/Header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/edittext_username"
         android:layout_marginTop="25dp"
-        android:text="Repository Name"
-        style="@style/Header">
+        android:text="@string/textview_reponame" >
     </TextView>
 
     <EditText
@@ -51,13 +51,33 @@
         android:layout_below="@+id/textview_label_repository"
         android:layout_marginTop="14dp"
         android:ems="10"
-        android:hint="Enter repository name you want to check"
+        android:hint="@string/edittext_reponame_hint"
         android:inputType="textShortMessage"
-        android:text="RepositorySentry" 
-       >
+        android:text="RepositorySentry" >
 
         <requestFocus />
     </EditText>
+    
+    <!-- Version Control System -->
+    
+    <TextView
+        android:id="@+id/textview_label_vcs"
+        style="@style/Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/edittext_repository"
+        android:layout_marginTop="25dp"
+        android:text="@string/textview_vcs" >
+    </TextView>
+
+    <Spinner
+        android:id="@+id/spinnerVcs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_label_vcs"
+        android:layout_marginTop="14dp"
+        android:textSize="24sp" />
 
     <!-- Set, Clear Buttons -->
 
@@ -69,7 +89,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:minHeight="@dimen/btn_height"
-        android:text="Clear" />
+        android:text="@string/button_clear" />
 
     <Button
         android:id="@+id/button_set_alarm"
@@ -79,6 +99,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:minHeight="@dimen/btn_height"
-        android:text="Set" />
+        android:text="@string/button_set" />
 
 </RelativeLayout>

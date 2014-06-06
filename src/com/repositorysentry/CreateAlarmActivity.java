@@ -40,6 +40,7 @@ public class CreateAlarmActivity extends Activity {
 		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
 
 		ALARM_DELAY = getIntent().getLongExtra("Interval", MainActivity.DEFAULT_ALARM_DELAY);
+		
 
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);

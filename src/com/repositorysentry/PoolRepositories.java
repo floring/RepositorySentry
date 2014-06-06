@@ -17,10 +17,23 @@ public class PoolRepositories {
 		}
 		return mPool;
 	}
+	
+	public Repository getRepository(int id) {
+		return mRepositories.get(id);
+	}
 
 	public void add(Repository item) {
 		mRepositories.add(item);
 		ID++;
+	}
+	
+	public void remove(int id) {
+		mRepositories.remove(id);
+	}
+	
+	public void clearAll() {
+		mRepositories.clear();
+		ID = 0;
 	}
 
 	public List<Repository> getPool() {
@@ -31,8 +44,10 @@ public class PoolRepositories {
 		return ID;
 	}
 	
-	public Repository getRepository(int id) {
-		return mRepositories.get(id);
+	public void setLastId(int id) {
+		ID = id;
 	}
+	
+	
 
 }

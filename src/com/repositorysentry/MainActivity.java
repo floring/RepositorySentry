@@ -48,6 +48,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
 	public static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+	public static final int DEFAULT_LAST_ID = 0;
 
 	private static final int CREATE_ALARM_ITEM_REQUEST = 0;
 	private static final String FILE_ALARMS = "AlarmsActivityData.txt";
@@ -62,6 +63,7 @@ public class MainActivity extends Activity {
 	private EditText etAlarmItemsFilter;
 
 	private CommitInspector mInspector;
+	private PoolRepositories mPool;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +74,21 @@ public class MainActivity extends Activity {
 
 		mInspector.mDbHelper = new DatabaseOpenHelper(this);
 		mInspector.mDB = mInspector.mDbHelper.getWritableDatabase();
-
+		
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 		mAlarmAdapter = new AlarmListAdapter(getApplicationContext());
 
 		mAlarmItems = (ListView) findViewById(android.R.id.list);
 		mAlarmItems.setAdapter(mAlarmAdapter);
+		
+		mPool = PoolRepositories.getInstance();
 
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
+		int lastId = settings.getInt("Id", DEFAULT_LAST_ID);
+		mPool.setLastId(lastId);
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -172,6 +178,7 @@ public class MainActivity extends Activity {
 				MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putLong("alarmInterval", alarmInterval);
+		editor.putInt("Id", mPool.getLastId());
 		editor.commit();
 
 		// Close database
@@ -316,6 +323,8 @@ public class MainActivity extends Activity {
 					}
 					mAlarmAdapter.clearAll();
 					mAlarmAdapter.notifyDataSetChanged();
+					
+					mPool.clearAll();
 
 					Toast.makeText(getApplicationContext(),
 							"All sentries has been deleted", Toast.LENGTH_SHORT)
@@ -417,6 +426,8 @@ public class MainActivity extends Activity {
 				mAlarmManager.cancel(pendingNoteIntent);
 
 				mInspector.removeRepositoryRowsFromDB(String.valueOf(alarmItem.getRepositoryId()));
+				
+				mPool.remove(alarmItem.getRepositoryId());
 
 				mAlarmAdapter.removeItem(positionToRemove);
 				mAlarmAdapter.notifyDataSetChanged();

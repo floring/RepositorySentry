@@ -1,11 +1,14 @@
 package com.repositorysentry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import android.content.Context;
 
 public class PoolRepositories {
 	
-	private static int ID = 0;
+	public static int ID = 0;
 	private static PoolRepositories mPool;
 	private List<Repository> mRepositories = new ArrayList<Repository>();
 	
@@ -24,7 +27,6 @@ public class PoolRepositories {
 
 	public void add(Repository item) {
 		mRepositories.add(item);
-		ID++;
 	}
 	
 	public void remove(int id) {
@@ -33,21 +35,26 @@ public class PoolRepositories {
 	
 	public void clearAll() {
 		mRepositories.clear();
-		ID = 0;
 	}
 
-	public List<Repository> getPool() {
-		return mRepositories;
+	public int getSize() {
+		return mRepositories.size();
 	}
-	
-	public static int getLastId() {
-		return ID;
-	}
-	
-	public void setLastId(int id) {
-		ID = id;
-	}
-	
-	
 
+	public void loadPool(Context context, ArrayList<HashMap<String, String>> list) {
+		for (HashMap<String, String> item : list) {
+			int id = Integer.parseInt(item.get(Repository.ID_TAG));
+			String username = item.get(Repository.NAME_TAG);
+			String repositoryName = item.get(Repository.REPOSITORY_TAG);
+			String vcsType = item.get(Repository.VCS_TAG);
+			
+			Repository repository = null;
+			if(vcsType == "git") {
+				repository = new GitRepository(context, id, username, repositoryName);
+			} else if(vcsType == "bitbucket") {
+				repository = new BitbucketRepository(context, id, username, repositoryName);
+			}
+			mRepositories.add(repository);
+		}
+	}
 }

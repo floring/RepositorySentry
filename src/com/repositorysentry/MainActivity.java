@@ -12,7 +12,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -82,13 +84,17 @@ public class MainActivity extends Activity {
 		mAlarmItems.setAdapter(mAlarmAdapter);
 		
 		mPool = PoolRepositories.getInstance();
+		if (mPool.getSize() == 0) {
+			ArrayList<HashMap<String, String>> repoList = mInspector.getRepositoriesFromDB();
+			mPool.loadPool(getApplicationContext(), repoList);
+		}
 
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
 		int lastId = settings.getInt("Id", DEFAULT_LAST_ID);
-		mPool.setLastId(lastId);
+		PoolRepositories.ID = lastId;
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -126,8 +132,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable arg0) {
-				// TODO Auto-generated method stub
-
+				
 			}
 		});
 	}
@@ -178,7 +183,7 @@ public class MainActivity extends Activity {
 				MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putLong("alarmInterval", alarmInterval);
-		editor.putInt("Id", mPool.getLastId());
+		editor.putInt("Id", PoolRepositories.ID);
 		editor.commit();
 
 		// Close database
@@ -325,6 +330,7 @@ public class MainActivity extends Activity {
 					mAlarmAdapter.notifyDataSetChanged();
 					
 					mPool.clearAll();
+					PoolRepositories.ID = 0;
 
 					Toast.makeText(getApplicationContext(),
 							"All sentries has been deleted", Toast.LENGTH_SHORT)

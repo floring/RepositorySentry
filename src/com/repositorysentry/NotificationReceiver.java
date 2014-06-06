@@ -24,12 +24,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		int repoId =  intent.getIntExtra("Id", 0);
-		
-		PoolRepositories pool = PoolRepositories.getInstance();
-		Repository repository = pool.getRepository(repoId);
-		ArrayList<HashMap<String, String>> commitsData = repository.getCommitsHistory(); 
-		
+		int repoId = intent.getIntExtra("Id", 0);
+
 		CommitInspector inspector = CommitInspector.getInstance();
 		if (inspector.mDB == null) {
 			inspector.mDbHelper = new DatabaseOpenHelper(context);
@@ -41,18 +37,30 @@ public class NotificationReceiver extends BroadcastReceiver {
 			}
 		}
 
+		PoolRepositories pool = PoolRepositories.getInstance();
+		if (pool.getSize() == 0) {
+			// load repos from db to pool
+			ArrayList<HashMap<String, String>> repoList = inspector.getRepositoriesFromDB();
+			pool.loadPool(context, repoList);
+		}
+		Repository repository = pool.getRepository(repoId);
+		ArrayList<HashMap<String, String>> commitsData = repository
+				.getCommitsHistory();
+
 		ArrayList<HashMap<String, String>> newCommitsData = inspector
-				.getNewCommits(String.valueOf(repoId), repository.getRepositoryName(), commitsData);
-		
+				.getNewCommits(String.valueOf(repoId), repository.getType(),
+						repository.getRepositoryName(), commitsData);
+
 		if (!newCommitsData.isEmpty()) {
 			mNotificationIntent = new Intent(context, MainActivity.class);
 			mContentIntent = PendingIntent.getActivity(context, 0,
 					mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-			
+
 			CharSequence contentText = "You've got " + newCommitsData.size()
 					+ " new commits";
 			CharSequence tickerText = "You've got new commits!";
-			sendNotification(context, newCommitsData, contentText, tickerText, repository.getRepositoryName());
+			sendNotification(context, newCommitsData, contentText, tickerText,
+					repository.getRepositoryName());
 		}
 
 		Log.i(TAG, "New commits count: " + newCommitsData.size()
@@ -62,7 +70,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	private void sendNotification(Context context,
 			ArrayList<HashMap<String, String>> newCommitsData,
-			CharSequence contentText, CharSequence tickerText, String repositoryName) {
+			CharSequence contentText, CharSequence tickerText,
+			String repositoryName) {
 		CharSequence contentTitle = repositoryName;
 
 		NotificationManager notificationManager = (NotificationManager) context

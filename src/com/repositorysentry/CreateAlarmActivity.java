@@ -59,11 +59,11 @@ public class CreateAlarmActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				int id = PoolRepositories.getLastId();
+				int id = PoolRepositories.ID;
 				String username = mUsernameText.getText().toString();
 				String repositoryName = mRepositoryText.getText().toString();
 
-				createAlarmItem(id, username, repositoryName);				
+				createAlarmItem(id, username, repositoryName);
 				createRepositoryItem(id, username, repositoryName);
 
 				finish();
@@ -92,6 +92,7 @@ public class CreateAlarmActivity extends Activity {
 		repository.setAlarm();
 		PoolRepositories pool = PoolRepositories.getInstance();
 		pool.add(repository);
+		PoolRepositories.ID++;
 	}
 
 

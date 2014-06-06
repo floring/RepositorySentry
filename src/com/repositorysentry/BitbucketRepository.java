@@ -101,4 +101,9 @@ public class BitbucketRepository extends Repository {
 	protected String getRepositoryName() {
 		return mRepositoryName;
 	}
+
+	@Override
+	protected String getType() {
+		return "bitbucket";
+	}
 }

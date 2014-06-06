@@ -99,4 +99,9 @@ public class GitRepository extends Repository {
 	protected String getRepositoryName() {
 		return mRepositoryName;
 	}
+
+	@Override
+	protected String getType() {
+		return "git";
+	}
 }

@@ -93,8 +93,7 @@ public class MainActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
-		int lastId = settings.getInt("Id", DEFAULT_LAST_ID);
-		PoolRepositories.ID = lastId;
+		PoolRepositories.ID = settings.getInt("Id", DEFAULT_LAST_ID);
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -294,8 +293,9 @@ public class MainActivity extends Activity {
 
 	private PendingIntent composeRequiredIntent(AlarmItem alarmItem) {
 		Bundle bundle = new Bundle();
-		bundle.putString("Username", alarmItem.getUsername());
-		bundle.putString("RepositoryName", alarmItem.getRepositoryName());
+		bundle.putString("RepositoryId", String.valueOf(alarmItem.getRepositoryId()));
+		//bundle.putString("Username", alarmItem.getUsername());
+		//bundle.putString("RepositoryName", alarmItem.getRepositoryName());
 
 		Intent notifIntent = new Intent(getApplicationContext(),
 				NotificationReceiver.class);
@@ -323,8 +323,8 @@ public class MainActivity extends Activity {
 						PendingIntent pendingNoteIntent = composeRequiredIntent(alarmItem);
 						mAlarmManager.cancel(pendingNoteIntent);
 
-						mInspector.removeRepositoryRowsFromDB(alarmItem
-								.getRepositoryName());
+						mInspector.removeRepositoryRowsFromDB(String.valueOf(alarmItem
+								.getRepositoryId()));
 					}
 					mAlarmAdapter.clearAll();
 					mAlarmAdapter.notifyDataSetChanged();

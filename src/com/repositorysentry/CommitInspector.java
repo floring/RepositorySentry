@@ -82,8 +82,8 @@ public class CommitInspector {
 				DatabaseOpenHelper.NAME_COLUMN,
 				DatabaseOpenHelper.VCS_COLUMN };
 		
-		Cursor cursor = mDB.query(DatabaseOpenHelper.TABLE_NAME, columns,
-				null, null, null, null, null);
+		Cursor cursor = mDB.query(true, DatabaseOpenHelper.TABLE_NAME, columns,
+				null, null, null, null, null, null);
 		
 		int columnRepoId = cursor.getColumnIndex(DatabaseOpenHelper.REPOSITORY_ID_COLUMN);
 		int columnRepositoryId = cursor.getColumnIndex(DatabaseOpenHelper.REPOSITORY_COLUMN);

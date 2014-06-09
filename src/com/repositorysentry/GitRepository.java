@@ -104,4 +104,9 @@ public class GitRepository extends Repository {
 	protected String getType() {
 		return "git";
 	}
+
+	@Override
+	protected int getRepoId() {
+		return mId;
+	}
 }

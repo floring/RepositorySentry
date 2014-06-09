@@ -1,9 +1,13 @@
 package com.repositorysentry;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -24,7 +28,7 @@ public class CreateAlarmActivity extends Activity {
 	private Spinner mSpinnerVcs;
 	
 	public static long ALARM_DELAY;
-	public static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
+	public static final long INITIAL_ALARM_DELAY = 10 * 60 * 1000L;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,10 +93,34 @@ public class CreateAlarmActivity extends Activity {
 				repository = new BitbucketRepository(getApplicationContext(), id, username, repositoryName);
 				break;
 		}
-		repository.setAlarm();
 		PoolRepositories pool = PoolRepositories.getInstance();
 		pool.add(repository);
+		
+		//repository.setAlarm();
+		setAlarm(repository);
+		
 		PoolRepositories.ID++;
+	}
+	
+	private void setAlarm(Repository repository) {
+		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		Bundle bundle = new Bundle();
+		bundle.putString("RepositoryId", String.valueOf(repository.getRepoId()));
+		Intent notificationIntent = new Intent(getApplicationContext(),
+				NotificationReceiver.class);
+		notificationIntent.putExtras(bundle);
+
+		PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
+				notificationIntent, 0);
+
+		// TODO: change 3nd parameter to CreateAlarmActivity.ALARM_DELAY
+		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+				SystemClock.elapsedRealtime(),
+				CreateAlarmActivity.INITIAL_ALARM_DELAY, contentIntent);
+
+		Toast.makeText(getApplicationContext(), "Repository Sentry Set", Toast.LENGTH_LONG)
+				.show();
+
 	}
 
 

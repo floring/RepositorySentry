@@ -36,10 +36,10 @@ public class BitbucketRepository extends Repository {
 
 	@Override
 	public void setAlarm() {
-		AlarmManager alarmManager = (AlarmManager) mContext
+		/*AlarmManager alarmManager = (AlarmManager) mContext
 				.getSystemService(Context.ALARM_SERVICE);
 		Bundle bundle = new Bundle();
-		bundle.putInt("Id", mId);
+		bundle.putString("RepositoryId", String.valueOf(mId));
 		Intent notificationIntent = new Intent(mContext,
 				NotificationReceiver.class);
 		notificationIntent.putExtras(bundle);
@@ -53,7 +53,7 @@ public class BitbucketRepository extends Repository {
 				CreateAlarmActivity.INITIAL_ALARM_DELAY, contentIntent);
 
 		Toast.makeText(mContext, "Repository Sentry Set", Toast.LENGTH_LONG)
-				.show();
+				.show();*/
 
 	}
 
@@ -75,7 +75,7 @@ public class BitbucketRepository extends Repository {
 				for(int i = 0; i < jsonArray.length(); ++i) {
 					jsonObject = jsonArray.getJSONObject(i);
 					
-					String date = jsonObject.getString(DATE_TAG).split("+")[0];
+					String date = jsonObject.getString(DATE_TAG).split("\\+")[0];
 					date = date.replaceAll(LETTERS, " ");
 					String message = jsonObject.getString(MESSAGE_TAG);
 					
@@ -105,5 +105,10 @@ public class BitbucketRepository extends Repository {
 	@Override
 	protected String getType() {
 		return "bitbucket";
+	}
+
+	@Override
+	protected int getRepoId() {
+		return mId;
 	}
 }

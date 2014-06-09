@@ -21,6 +21,7 @@ public abstract class Repository {
 	protected abstract String getRepositoryName();
 	protected abstract ArrayList<HashMap<String, String>> parseJSON(String jsonStr);
 	protected abstract String getType();
+	protected abstract int getRepoId();
 	
 	public ArrayList<HashMap<String, String>> getCommitsHistory() {
 		String url = getUrl();

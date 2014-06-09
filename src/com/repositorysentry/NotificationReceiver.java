@@ -24,7 +24,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		int repoId = intent.getIntExtra("Id", 0);
+		int repoId = Integer.parseInt(intent.getStringExtra("RepositoryId"));
 
 		CommitInspector inspector = CommitInspector.getInstance();
 		if (inspector.mDB == null) {

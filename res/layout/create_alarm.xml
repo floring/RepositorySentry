@@ -25,7 +25,7 @@
         android:ems="10"
         android:hint="@string/edittext_username_hint"
         android:inputType="textShortMessage"
-        android:text="floring" >
+        android:text="poiuj" >
 
         <requestFocus />
     </EditText>
@@ -53,7 +53,7 @@
         android:ems="10"
         android:hint="@string/edittext_reponame_hint"
         android:inputType="textShortMessage"
-        android:text="RepositorySentry" >
+        android:text="cryptography_lab1" >
 
         <requestFocus />
     </EditText>

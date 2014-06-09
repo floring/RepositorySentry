@@ -28,7 +28,7 @@ public class CreateAlarmActivity extends Activity {
 	private Spinner mSpinnerVcs;
 	
 	public static long ALARM_DELAY;
-	public static final long INITIAL_ALARM_DELAY = 10 * 60 * 1000L;
+	public static final long INITIAL_ALARM_DELAY = 15 * 60 * 1000L;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

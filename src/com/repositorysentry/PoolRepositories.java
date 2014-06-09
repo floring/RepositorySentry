@@ -8,7 +8,7 @@ import android.content.Context;
 
 public class PoolRepositories {
 	
-	public static int ID = 0;
+	public static int ID;
 	private static PoolRepositories mPool;
 	private List<Repository> mRepositories = new ArrayList<Repository>();
 	
@@ -35,6 +35,7 @@ public class PoolRepositories {
 	
 	public void clearAll() {
 		mRepositories.clear();
+		ID = 0;
 	}
 
 	public int getSize() {

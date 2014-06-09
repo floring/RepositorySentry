@@ -33,7 +33,7 @@ public class GitRepository extends Repository {
 
 	@Override
 	public void setAlarm() {
-		AlarmManager alarmManager = (AlarmManager) mContext
+		/*AlarmManager alarmManager = (AlarmManager) mContext
 				.getSystemService(Context.ALARM_SERVICE);
 		Bundle bundle = new Bundle();
 		bundle.putInt("Id", mId);
@@ -50,7 +50,7 @@ public class GitRepository extends Repository {
 				CreateAlarmActivity.INITIAL_ALARM_DELAY, contentIntent);
 
 		Toast.makeText(mContext, "Repository Sentry Set", Toast.LENGTH_LONG)
-				.show();
+				.show();*/
 	}
 
 	@Override

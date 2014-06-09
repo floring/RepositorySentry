@@ -67,12 +67,14 @@ public class CommitHistoryActivity extends ListActivity {
 		CommitHistoryParsing commitHistory = new CommitHistoryParsing(this);
 		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
 				.getCommitsHistory(mUsername, mRepositoryName);
+		mInspector.getNewCommits(mRepositoryName, commitsInfo);
 		
 		refreshAdapter(commitsInfo);
 	}
 	
 	private void refreshAdapter(ArrayList<HashMap<String, String>> commits) {		
-		mCommitList = commits;
+		mCommitList.clear();
+		mCommitList.addAll(commits);
 		mAdapter.notifyDataSetChanged();
 	}
 }

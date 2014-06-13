@@ -30,7 +30,7 @@
         </activity>
         <!-- This is the creation activity -->
         <activity
-            android:name="com.repositorysentry.CreateAlarmActivity"
+            android:name="com.repositorysentry.CreateSentryActivity"
             android:label="@string/app_name" >
         </activity>
         <!-- This is the commit history activity -->

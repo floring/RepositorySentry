@@ -1,60 +1,19 @@
 package com.repositorysentry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.UUID;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.widget.Toast;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 public class BitbucketRepository extends Repository {
 
-	private int mId;
-	private Context mContext;
-	private String mUsername;
-	private String mRepositoryName;
-	
-	public static final String AUTHOR_TAG = "author";
-	public static final String VALUES_TAG = "values";
-	public static final String RAW_TAG = "raw";
-
-	public BitbucketRepository(Context context, int id, String username,
+	public BitbucketRepository(Context context, String username,
 			String repositoryName) {
+		mId = UUID.randomUUID();
 		mContext = context;
-		mId = id;
 		mUsername = username;
 		mRepositoryName = repositoryName;
-	}
-
-	@Override
-	public void setAlarm() {
-		/*AlarmManager alarmManager = (AlarmManager) mContext
-				.getSystemService(Context.ALARM_SERVICE);
-		Bundle bundle = new Bundle();
-		bundle.putString("RepositoryId", String.valueOf(mId));
-		Intent notificationIntent = new Intent(mContext,
-				NotificationReceiver.class);
-		notificationIntent.putExtras(bundle);
-
-		PendingIntent contentIntent = PendingIntent.getBroadcast(mContext, 0,
-				notificationIntent, 0);
-
-		// TODO: change 3nd parameter to CreateAlarmActivity.ALARM_DELAY
-		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime(),
-				CreateAlarmActivity.INITIAL_ALARM_DELAY, contentIntent);
-
-		Toast.makeText(mContext, "Repository Sentry Set", Toast.LENGTH_LONG)
-				.show();*/
-
 	}
 
 	@Override
@@ -65,50 +24,39 @@ public class BitbucketRepository extends Repository {
 		return url;
 	}
 
+	/**
+	 * Returns kinds of special objects contained in this Parcelable's
+	 * representation. In this case returns 0.
+	 */
 	@Override
-	protected ArrayList<HashMap<String, String>> parseJSON(String jsonStr) {
-		ArrayList<HashMap<String, String>> comitsData = new ArrayList<HashMap<String, String>>();
-		if (jsonStr != null && !jsonStr.isEmpty()) {
-			try {
-				JSONObject jsonObject = new JSONObject(jsonStr);
-				JSONArray jsonArray = jsonObject.getJSONArray(VALUES_TAG);
-				for(int i = 0; i < jsonArray.length(); ++i) {
-					jsonObject = jsonArray.getJSONObject(i);
-					
-					String date = jsonObject.getString(DATE_TAG).split("\\+")[0];
-					date = date.replaceAll(LETTERS, " ");
-					String message = jsonObject.getString(MESSAGE_TAG);
-					
-					jsonObject = jsonObject.getJSONObject(AUTHOR_TAG);
-					String author = jsonObject.getString(RAW_TAG).split(" ")[0];
-					
-					HashMap<String, String> commitInfo = new HashMap<String, String>();
-					commitInfo.put(NAME_TAG, author);
-					commitInfo.put(DATE_TAG, date);
-					commitInfo.put(MESSAGE_TAG, message);
+	public int describeContents() {
+		return 0;
+	}
 
-					comitsData.add(commitInfo);					
-				}
+	/** Packs object from Parcel. */
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(mUsername);
+		dest.writeString(mRepositoryName);
+		dest.writeValue(mId);
+	}
 
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+	/** Unpacks object from Parcel. */
+	public static final Parcelable.Creator<BitbucketRepository> CREATOR = new Parcelable.Creator<BitbucketRepository>() {
+		public BitbucketRepository createFromParcel(Parcel in) {
+			return new BitbucketRepository(in);
 		}
-		return comitsData;
-	}
-	
-	@Override
-	protected String getRepositoryName() {
-		return mRepositoryName;
+
+		public BitbucketRepository[] newArray(int size) {
+			return new BitbucketRepository[size];
+		}
+	};
+
+	/** Constructor which reads data from Parcel. */
+	private BitbucketRepository(Parcel in) {
+		mUsername = in.readString();
+		mRepositoryName = in.readString();
+		mId = (UUID) in.readValue(null);
 	}
 
-	@Override
-	protected String getType() {
-		return "bitbucket";
-	}
-
-	@Override
-	protected int getRepoId() {
-		return mId;
-	}
 }

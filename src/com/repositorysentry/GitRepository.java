@@ -1,56 +1,18 @@
 package com.repositorysentry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.widget.Toast;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 public class GitRepository extends Repository {
 
-	private int mId;
-	private Context mContext;
-	private String mUsername;
-	private String mRepositoryName;
-
-	public GitRepository(Context context, int id, String username,
-			String repositoryName) {
+	public GitRepository(Context context, String username, String repositoryName) {
+		mId = UUID.randomUUID();
 		mContext = context;
-		mId = id;
 		mUsername = username;
 		mRepositoryName = repositoryName;
-	}
-
-	@Override
-	public void setAlarm() {
-		/*AlarmManager alarmManager = (AlarmManager) mContext
-				.getSystemService(Context.ALARM_SERVICE);
-		Bundle bundle = new Bundle();
-		bundle.putInt("Id", mId);
-		Intent notificationIntent = new Intent(mContext,
-				NotificationReceiver.class);
-		notificationIntent.putExtras(bundle);
-
-		PendingIntent contentIntent = PendingIntent.getBroadcast(mContext, 0,
-				notificationIntent, 0);
-
-		// TODO: change 3nd parameter to CreateAlarmActivity.ALARM_DELAY
-		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime(),
-				CreateAlarmActivity.INITIAL_ALARM_DELAY, contentIntent);
-
-		Toast.makeText(mContext, "Repository Sentry Set", Toast.LENGTH_LONG)
-				.show();*/
 	}
 
 	@Override
@@ -60,53 +22,39 @@ public class GitRepository extends Repository {
 				mRepositoryName);
 		return url;
 	}
-		
+
+	/**
+	 * Returns kinds of special objects contained in this Parcelable's
+	 * representation. In this case returns 0.
+	 */
 	@Override
-	protected  ArrayList<HashMap<String, String>> parseJSON(String jsonStr) {
-		ArrayList<HashMap<String, String>> comitsData = new ArrayList<HashMap<String, String>>();
-		if (jsonStr != null && !jsonStr.isEmpty()) {
-			try {
-				JSONArray jsonArray = new JSONArray(jsonStr);
-				JSONObject jsonObject;
+	public int describeContents() {
+		return 0;
+	}
 
-				for (int i = 0; i < jsonArray.length(); ++i) {
-					jsonObject = jsonArray.getJSONObject(i);
+	/** Packs object from Parcel. */
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(mUsername);
+		dest.writeString(mRepositoryName);
+		dest.writeValue(mId);
+	}
 
-					jsonObject = jsonObject.getJSONObject(COMMIT_TAG);
-					String message = jsonObject.getString(MESSAGE_TAG);
-
-					jsonObject = jsonObject.getJSONObject(COMMITER_TAG);
-					String name = jsonObject.getString(NAME_TAG);
-					String date = jsonObject.getString(DATE_TAG);
-					date = date.replaceAll(LETTERS, " ");			
-
-					HashMap<String, String> commitInfo = new HashMap<String, String>();
-					commitInfo.put(NAME_TAG, name);
-					commitInfo.put(DATE_TAG, date);
-					commitInfo.put(MESSAGE_TAG, message);
-
-					comitsData.add(commitInfo);
-				}
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+	/** Unpacks object from Parcel. */
+	public static final Parcelable.Creator<GitRepository> CREATOR = new Parcelable.Creator<GitRepository>() {
+		public GitRepository createFromParcel(Parcel in) {
+			return new GitRepository(in);
 		}
-		return comitsData;
-	}
-	
-	@Override
-	protected String getRepositoryName() {
-		return mRepositoryName;
-	}
 
-	@Override
-	protected String getType() {
-		return "git";
-	}
+		public GitRepository[] newArray(int size) {
+			return new GitRepository[size];
+		}
+	};
 
-	@Override
-	protected int getRepoId() {
-		return mId;
+	/** Constructor which reads data from Parcel. */
+	private GitRepository(Parcel in) {
+		mUsername = in.readString();
+		mRepositoryName = in.readString();
+		mId = (UUID) in.readValue(null);
 	}
 }

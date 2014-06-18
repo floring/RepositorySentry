@@ -12,7 +12,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		
-		Repository repository = intent.getParcelableExtra("Repository");
+		Repository repository = intent.getParcelableExtra(SentryCreator.INTENT_KEY_REPO);
 		
 		Log.i(TAG, "test: " + repository.getRepositoryName());
 	}

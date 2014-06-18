@@ -55,16 +55,34 @@ public class MainActivity extends Activity {
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 
 	private static long alarmInterval;
+	
+	private SentryItemAdapter mSentryAdapter;
+	private ListView mSentryItems;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.alarm_listview);
+		
+		mSentryAdapter = new SentryItemAdapter(getApplicationContext());
+		mSentryItems = (ListView) findViewById(android.R.id.list);
+		mSentryItems.setAdapter(mSentryAdapter);
 
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (requestCode == CREATE_ALARM_ITEM_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				mSentryAdapter.add((Repository)data.getParcelableExtra(CreateSentryActivity.INTENT_KEY_SENTRY));
+			}
+		}
+
 	}
 
 	@Override

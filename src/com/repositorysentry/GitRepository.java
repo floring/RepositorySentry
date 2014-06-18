@@ -7,12 +7,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class GitRepository extends Repository {
+	
+	private static final String TYPE = "Git";
 
 	public GitRepository(Context context, String username, String repositoryName) {
 		mId = UUID.randomUUID();
 		mContext = context;
 		mUsername = username;
 		mRepositoryName = repositoryName;
+		mDate = getDateString();
 	}
 
 	@Override
@@ -37,6 +40,7 @@ public class GitRepository extends Repository {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(mUsername);
 		dest.writeString(mRepositoryName);
+		dest.writeString(mDate);
 		dest.writeValue(mId);
 	}
 
@@ -55,6 +59,12 @@ public class GitRepository extends Repository {
 	private GitRepository(Parcel in) {
 		mUsername = in.readString();
 		mRepositoryName = in.readString();
+		mDate = in.readString();
 		mId = (UUID) in.readValue(null);
+	}
+
+	@Override
+	protected String getType() {
+		return TYPE;
 	}
 }

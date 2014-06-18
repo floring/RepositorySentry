@@ -32,5 +32,10 @@
     <string name="textview_alarm_username">username</string>
     <string name="textview_alarm_repository">repository</string>
     <string name="textview_alarm_date">date</string>
+    
+    
+    <!-- VCS Names Strings -->
+    <string name="vcs_git">Git</string>
+    <string name="vcs_bitbucket">BitBucket</string>
 
 </resources>

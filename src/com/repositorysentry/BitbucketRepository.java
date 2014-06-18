@@ -7,6 +7,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class BitbucketRepository extends Repository {
+	
+	private static final String TYPE = Vcs.BitBucket.toString();
 
 	public BitbucketRepository(Context context, String username,
 			String repositoryName) {
@@ -14,6 +16,7 @@ public class BitbucketRepository extends Repository {
 		mContext = context;
 		mUsername = username;
 		mRepositoryName = repositoryName;
+		mDate = getDateString();
 	}
 
 	@Override
@@ -38,6 +41,7 @@ public class BitbucketRepository extends Repository {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(mUsername);
 		dest.writeString(mRepositoryName);
+		dest.writeString(mDate);
 		dest.writeValue(mId);
 	}
 
@@ -57,6 +61,12 @@ public class BitbucketRepository extends Repository {
 		mUsername = in.readString();
 		mRepositoryName = in.readString();
 		mId = (UUID) in.readValue(null);
+		mDate = in.readString();
+	}
+
+	@Override
+	protected String getType() {
+		return TYPE;
 	}
 
 }

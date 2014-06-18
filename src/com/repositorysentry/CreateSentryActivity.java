@@ -30,7 +30,8 @@ public class CreateSentryActivity extends Activity {
 	private static int DEFAULT_REPO_TYPE = 0; 
 	
 	public static long ALARM_DELAY;
-	public static final long INITIAL_ALARM_DELAY = 15 * 60 * 1000L;
+	public static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
+	public static final String INTENT_KEY_SENTRY = "SentryItem";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,11 @@ public class CreateSentryActivity extends Activity {
 				String repoType = mSpinnerVcs.getSelectedItem().toString();
 				
 				SentryCreator sentryCreator = new SentryCreator(getApplicationContext(), repoType, username, repositoryName);
-				sentryCreator.create();
+				Repository repo = sentryCreator.create();
+				
+				Intent intent = new Intent();
+				intent.putExtra(INTENT_KEY_SENTRY, repo);
+				setResult(RESULT_OK, intent);
 				
 				finish();
 			}

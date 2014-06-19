@@ -72,6 +72,23 @@ public class MainActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
+		
+		// Calculate touch parameters based on display metrics
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		final int minDistance = (int) (120.0f * dm.densityDpi / 160.0f + 0.5);
+		final int maxPath = (int) (250.0f * dm.densityDpi / 160.0f + 0.5);
+		final double velocity = 200.0f * dm.densityDpi / 160.0f + 0.5;
+
+		final GestureDetector gestureDetector = new GestureDetector(getApplicationContext(),
+				new ListGestureDetector(getApplicationContext(), mSentryAdapter, mSentryItems, minDistance, maxPath, velocity));
+		mSentryItems.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+
+				return gestureDetector.onTouchEvent(event);
+			}
+		});
 	}
 	
 	@Override
@@ -129,5 +146,7 @@ public class MainActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	
 
 }

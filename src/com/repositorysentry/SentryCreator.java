@@ -14,6 +14,7 @@ public class SentryCreator {
 	private static String mUsername;
 	private static String mRepositoryName;
 	private Context mContext;
+	private Repository mRepository;
 	
 	public static final String INTENT_KEY_REPO = "Repository";
 
@@ -24,18 +25,23 @@ public class SentryCreator {
 		mRepositoryName = repoName;
 		mContext = context;
 	}
+	
+	public SentryCreator(Context context, Repository r) {
+		mContext = context;
+		mRepository = r;
+	}
 
 	public Repository create() {
 		Repository repo = createRepository(mContext, mRepoType, mUsername,
 				mRepositoryName);
 
-		//setSentry(repo);
+		setSentry(repo);
 		
 		return repo;
 	}
 	
 	public void remove() {
-		
+		removeSentry(mRepository);
 	}
 
 	private Repository createRepository(Context context, String repoType,

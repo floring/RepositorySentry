@@ -1,6 +1,12 @@
 package com.repositorysentry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -8,7 +14,7 @@ import android.os.Parcelable;
 
 public class GitRepository extends Repository {
 	
-	private static final String TYPE = "Git";
+	private static final String TYPE = Vcs.Git.toString();
 
 	public GitRepository(Context context, String username, String repositoryName) {
 		mId = UUID.randomUUID();
@@ -66,5 +72,39 @@ public class GitRepository extends Repository {
 	@Override
 	protected String getType() {
 		return TYPE;
+	}
+
+	@Override
+	protected ArrayList<HashMap<String, String>> parseJSON(String jsonStr) {
+		ArrayList<HashMap<String, String>> comitsData = new ArrayList<HashMap<String, String>>();
+		if (jsonStr != null && !jsonStr.isEmpty()) {
+			try {
+				JSONArray jsonArray = new JSONArray(jsonStr);
+				JSONObject jsonObject;
+
+				for (int i = 0; i < jsonArray.length(); ++i) {
+					jsonObject = jsonArray.getJSONObject(i);
+
+					jsonObject = jsonObject.getJSONObject(COMMIT_TAG);
+					String message = jsonObject.getString(MESSAGE_TAG);
+
+					jsonObject = jsonObject.getJSONObject(COMMITER_TAG);
+					String name = jsonObject.getString(NAME_TAG);
+					String date = jsonObject.getString(DATE_TAG);
+					date = date.replaceAll(LETTERS, " ");			
+
+					HashMap<String, String> commitInfo = new HashMap<String, String>();
+					commitInfo.put(NAME_TAG, name);
+					commitInfo.put(DATE_TAG, date);
+					commitInfo.put(MESSAGE_TAG, message);
+
+					comitsData.add(commitInfo);
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return comitsData;
 	}
 }

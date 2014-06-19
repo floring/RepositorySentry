@@ -1,6 +1,12 @@
 package com.repositorysentry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -9,6 +15,10 @@ import android.os.Parcelable;
 public class BitbucketRepository extends Repository {
 	
 	private static final String TYPE = Vcs.BitBucket.toString();
+	
+	public static final String AUTHOR_TAG = "author";
+	public static final String VALUES_TAG = "values";
+	public static final String RAW_TAG = "raw";
 
 	public BitbucketRepository(Context context, String username,
 			String repositoryName) {
@@ -60,8 +70,8 @@ public class BitbucketRepository extends Repository {
 	private BitbucketRepository(Parcel in) {
 		mUsername = in.readString();
 		mRepositoryName = in.readString();
-		mId = (UUID) in.readValue(null);
 		mDate = in.readString();
+		mId = (UUID) in.readValue(null);		
 	}
 
 	@Override
@@ -69,4 +79,35 @@ public class BitbucketRepository extends Repository {
 		return TYPE;
 	}
 
+	@Override
+	protected ArrayList<HashMap<String, String>> parseJSON(String jsonStr) {
+		ArrayList<HashMap<String, String>> comitsData = new ArrayList<HashMap<String, String>>();
+		if (jsonStr != null && !jsonStr.isEmpty()) {
+			try {
+				JSONObject jsonObject = new JSONObject(jsonStr);
+				JSONArray jsonArray = jsonObject.getJSONArray(VALUES_TAG);
+				for(int i = 0; i < jsonArray.length(); ++i) {
+					jsonObject = jsonArray.getJSONObject(i);
+					
+					String date = jsonObject.getString(DATE_TAG).split("\\+")[0];
+					date = date.replaceAll(LETTERS, " ");
+					String message = jsonObject.getString(MESSAGE_TAG);
+					
+					jsonObject = jsonObject.getJSONObject(AUTHOR_TAG);
+					String author = jsonObject.getString(RAW_TAG).split(" ")[0];
+					
+					HashMap<String, String> commitInfo = new HashMap<String, String>();
+					commitInfo.put(NAME_TAG, author);
+					commitInfo.put(DATE_TAG, date);
+					commitInfo.put(MESSAGE_TAG, message);
+
+					comitsData.add(commitInfo);					
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return comitsData;
+	}
 }

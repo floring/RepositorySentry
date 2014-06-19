@@ -9,5 +9,4 @@
         android:showAsAction="ifRoom"
         android:title="@string/refresh_history"/>
     
-
 </menu>

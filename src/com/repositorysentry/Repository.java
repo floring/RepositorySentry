@@ -1,12 +1,13 @@
 package com.repositorysentry;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Parcelable;
-import java.util.Date;
 
 public abstract class Repository implements Parcelable {
 	
@@ -15,6 +16,13 @@ public abstract class Repository implements Parcelable {
 	protected String mRepositoryName;
 	protected String mDate;
 	protected Context mContext;	
+	
+	public static final String COMMIT_TAG = "commit";
+	public static final String MESSAGE_TAG = "message";
+	public static final String COMMITER_TAG = "committer";
+	public static final String NAME_TAG = "name";
+	public static final String DATE_TAG = "date";
+	public static final String LETTERS = "[A-Za-z]";
 	
 	protected UUID getId() {
 		return mId;
@@ -35,6 +43,23 @@ public abstract class Repository implements Parcelable {
 	protected abstract String getUrl();
 	
 	protected abstract String getType();
+	
+	protected abstract ArrayList<HashMap<String, String>> parseJSON(String jsonStr);
+	
+	public ArrayList<HashMap<String, String>> getCommitsHistory() {
+		String url = getUrl();
+		HttpGetTask task = new HttpGetTask();
+		task.execute(url);
+		try {
+			String jsonStr = task.get();
+			return (jsonStr.isEmpty()) ? null : parseJSON(jsonStr);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	protected String getDateString() {
 		Calendar c = Calendar.getInstance();

@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -87,6 +89,15 @@ public class SentryItemAdapter extends BaseAdapter implements Filterable {
 				.findViewById(R.id.textView_alarm_listview_item_date);
 		//dateView.setText(FORMAT.format(repoItem.getDate()));
 		dateView.setText(repoItem.getDate());
+		
+		int id = 0;
+		if(repoItem.getType().equals(Vcs.Git.toString())) {
+			id = R.drawable.ic_vcs_git;
+		} else if(repoItem.getType().equals(Vcs.BitBucket.toString())) {
+			id = R.drawable.ic_vcs_bitbucket;
+		}
+		final ImageView vcsView = (ImageView) itemLayout.findViewById(R.id.item_alarm_listview_vcs);
+		vcsView.setImageResource(id);
 
 		return itemLayout;
 	}

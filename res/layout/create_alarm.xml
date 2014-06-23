@@ -53,7 +53,7 @@
         android:ems="10"
         android:hint="@string/edittext_reponame_hint"
         android:inputType="textShortMessage"
-        android:text="cryptography_lab1" >
+        android:text="cl-text-table" >
 
         <requestFocus />
     </EditText>

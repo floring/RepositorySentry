@@ -23,7 +23,7 @@
     <string name="textview_username">Username</string>
     <string name="edittext_username_hint">Enter account username</string>
     <string name="textview_reponame">Repository Name</string>
-    <string name="edittext_reponame_hint">Enter repository name you want to check</string>
+    <string name="edittext_reponame_hint">Enter repository you want to check</string>
     <string name="textview_vcs">Version Control System</string>
     <string name="button_clear">Clear</string>
     <string name="button_set">Set</string>

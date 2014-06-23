@@ -52,7 +52,7 @@ public class ListGestureDetector extends SimpleOnGestureListener {
 			mSentryAdapter.notifyDataSetChanged();
 			
 			Toast.makeText(mContext,
-					"Sentry to '" + repoItem.getRepositoryName() + "' has been cancelled",
+					"Sentry to '" + repoItem.getRepositoryName() + "' cancelled",
 					Toast.LENGTH_SHORT).show();
 			return true;
 		}

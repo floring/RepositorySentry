@@ -30,7 +30,7 @@ public class CreateSentryActivity extends Activity {
 	private static int DEFAULT_REPO_TYPE = 0; 
 	
 	public static long ALARM_DELAY;
-	public static final long INITIAL_ALARM_DELAY = 2 * 60 * 1000L;
+	public static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 	public static final String INTENT_KEY_SENTRY = "SentryItem";
 
 	@Override

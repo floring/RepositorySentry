@@ -48,6 +48,14 @@ public class ListGestureDetector extends SimpleOnGestureListener {
 			SentryCreator creator = new SentryCreator(mContext, repoItem);
 			creator.remove();
 			
+			// move further to creator?
+			CommitInspector inspector = CommitInspector.getInstance();
+			if(inspector.DB == null || !inspector.DB.isOpen()) {
+				inspector.DbHelper = new DatabaseOpenHelper(mContext);
+				inspector.DB = inspector.DbHelper.getWritableDatabase();
+			}
+			inspector.remove(repoItem);
+			
 			mSentryAdapter.removeItem(positionToRemove);
 			mSentryAdapter.notifyDataSetChanged();
 			

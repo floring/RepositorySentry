@@ -2,6 +2,7 @@ package com.repositorysentry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,6 +44,18 @@ public class CommitInspector {
 			}
 		}
 		return newComits;
+	}
+	
+	public void remove(Repository repo) {
+		String repoId = repo.getId().toString();
+		removeRow(repoId);
+	}
+	
+	private void removeRow(String id) {
+		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { id };
+
+		DB.delete(DatabaseOpenHelper.TABLE_NAME, whereClause, whereArgs);
 	}
 	
 	private boolean isRowExists(String repoId,

@@ -28,6 +28,14 @@ public class BitbucketRepository extends Repository {
 		mRepositoryName = repositoryName;
 		mDate = getDateString();
 	}
+	
+	public BitbucketRepository(UUID id, Context context, String username, String repositoryName, String date) {
+		mId = id;
+		mContext = context;
+		mUsername = username;
+		mRepositoryName = repositoryName;
+		mDate = date;
+	}
 
 	@Override
 	protected String getUrl() {

@@ -26,7 +26,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		
 		Repository repository = intent.getParcelableExtra(SentryCreator.INTENT_KEY_REPO);
-		ArrayList<HashMap<String, String>> commits = repository.getCommitsHistory();
+		ArrayList<HashMap<String, String>> commits = repository.getCommits();
 		Intent notificationIntent = new Intent(context, MainActivity.class);
 		mContentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);

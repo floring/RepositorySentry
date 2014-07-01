@@ -37,5 +37,9 @@
     <!-- VCS Names Strings -->
     <string name="vcs_git">Git</string>
     <string name="vcs_bitbucket">BitBucket</string>
+    
+    <!-- Informative Strings -->
+    <string name="no_commits">There is no commits!</string>
+    <string name="no_sentries">There is no sentries!</string>
 
 </resources>

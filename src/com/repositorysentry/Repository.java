@@ -22,7 +22,8 @@ public abstract class Repository implements Parcelable {
 	public static final String COMMITER_TAG = "committer";
 	public static final String NAME_TAG = "name";
 	public static final String DATE_TAG = "date";
-	public static final String LETTERS = "[A-Za-z]";
+	public static final String LETTERS = "[A-Za-z]";	
+	public static final String ITEM_SEP = System.getProperty("line.separator");
 	
 	protected UUID getId() {
 		return mId;
@@ -46,7 +47,7 @@ public abstract class Repository implements Parcelable {
 	
 	protected abstract ArrayList<HashMap<String, String>> parseJSON(String jsonStr);
 	
-	public ArrayList<HashMap<String, String>> getCommitsHistory() {
+	public ArrayList<HashMap<String, String>> getCommits() {
 		String url = getUrl();
 		HttpGetTask task = new HttpGetTask();
 		task.execute(url);
@@ -81,5 +82,9 @@ public abstract class Repository implements Parcelable {
 
 		return dateString;
 	}
-
+	
+	public String toString() {
+		return mId + ITEM_SEP + mUsername + ITEM_SEP + mRepositoryName
+				+ ITEM_SEP + mDate + ITEM_SEP + getType();
+	}
 }

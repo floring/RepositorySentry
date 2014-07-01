@@ -26,6 +26,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 	private static final String FILE_SENTRIES = "SentriesData.txt";
 
-	private static long alarmInterval;
+	private static long ALARM_INTERVAL;
 
 	private SentryItemAdapter mSentryAdapter;
 	private ListView mSentryItems;
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
-		alarmInterval = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
+		ALARM_INTERVAL = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -90,9 +91,7 @@ public class MainActivity extends Activity {
 		final double velocity = 200.0f * dm.densityDpi / 160.0f + 0.5;
 
 		final GestureDetector gestureDetector = new GestureDetector(
-				getApplicationContext(), new ListGestureDetector(
-						getApplicationContext(), mSentryAdapter, mSentryItems,
-						minDistance, maxPath, velocity));
+				getApplicationContext(), new ListGestureDetector(minDistance, maxPath, velocity));
 		mSentryItems.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -165,7 +164,7 @@ public class MainActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong("alarmInterval", alarmInterval);
+		editor.putLong("alarmInterval", ALARM_INTERVAL);
 		editor.commit();
 		
 		// Close database
@@ -182,15 +181,15 @@ public class MainActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 
-		if (alarmInterval == AlarmManager.INTERVAL_FIFTEEN_MINUTES)
+		if (ALARM_INTERVAL == AlarmManager.INTERVAL_FIFTEEN_MINUTES)
 			menu.findItem(R.id.option_15_min).setChecked(true);
-		else if (alarmInterval == AlarmManager.INTERVAL_HALF_HOUR)
+		else if (ALARM_INTERVAL == AlarmManager.INTERVAL_HALF_HOUR)
 			menu.findItem(R.id.option_30_min).setChecked(true);
-		else if (alarmInterval == AlarmManager.INTERVAL_HOUR)
+		else if (ALARM_INTERVAL == AlarmManager.INTERVAL_HOUR)
 			menu.findItem(R.id.option_1_hour).setChecked(true);
-		else if (alarmInterval == AlarmManager.INTERVAL_HOUR * 2)
+		else if (ALARM_INTERVAL == AlarmManager.INTERVAL_HOUR * 2)
 			menu.findItem(R.id.option_2_hour).setChecked(true);
-		else if (alarmInterval == AlarmManager.INTERVAL_DAY)
+		else if (ALARM_INTERVAL == AlarmManager.INTERVAL_DAY)
 			menu.findItem(R.id.option_1_day).setChecked(true);
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -201,7 +200,7 @@ public class MainActivity extends Activity {
 		case R.id.action_create:
 			Intent intent = new Intent(MainActivity.this,
 					CreateSentryActivity.class);
-			intent.putExtra("Interval", alarmInterval);
+			intent.putExtra("Interval", ALARM_INTERVAL);
 			startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
 			return true;
 		default:
@@ -269,5 +268,77 @@ public class MainActivity extends Activity {
 				writer.close();
 			}
 		}
+	}
+	
+	public class ListGestureDetector extends SimpleOnGestureListener {
+		
+		private int FLING_MIN_DISTANCE;
+		private int FLING_MAX_OFF_PATH;
+		private double FLING_THRESHOLD_VELOCITY;
+
+
+		public ListGestureDetector(int minDistance, int maxPath,
+				double velocity) {
+			FLING_MIN_DISTANCE = minDistance;
+			FLING_MAX_OFF_PATH = maxPath;
+			FLING_THRESHOLD_VELOCITY = velocity;
+		}
+		
+		@Override
+		public boolean onFling(MotionEvent event1, MotionEvent event2,
+				float velocityX, float velocityY) {
+			if (Math.abs(event1.getY() - event2.getY()) > FLING_MAX_OFF_PATH) {
+				return false;
+			}
+			// if: Right to Left fling
+			// else: Left to Right fling
+			if (event1.getX() - event2.getX() > FLING_MIN_DISTANCE
+					&& Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
+
+			} else if (event2.getX() - event1.getX() > FLING_MIN_DISTANCE
+					&& Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
+				
+				int positionToRemove = mSentryItems.pointToPosition(
+						(int) event1.getX(), (int) event1.getY());
+				Repository repoItem = (Repository) mSentryAdapter
+						.getItem(positionToRemove);
+				
+				SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
+				creator.remove();
+				
+				// move further to creator?
+				mInspector.remove(repoItem);
+				
+				mSentryAdapter.removeItem(positionToRemove);
+				mSentryAdapter.notifyDataSetChanged();
+				
+				Toast.makeText(getApplicationContext(),
+						"Sentry to '" + repoItem.getRepositoryName() + "' cancelled",
+						Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			return false;
+		}
+		
+		@Override
+		public boolean onSingleTapConfirmed(MotionEvent e) {
+			int itemPosition = mSentryItems.pointToPosition((int) e.getX(),
+					(int) e.getY());
+			Repository repoItem = (Repository) mSentryAdapter
+					.getItem(itemPosition);
+
+			Intent commitHistoryIntent = new Intent(getApplicationContext(),
+					CommitHistoryActivity.class);
+			commitHistoryIntent.putExtra(SentryCreator.INTENT_KEY_REPO, repoItem);
+			startActivity(commitHistoryIntent);
+
+			return true;
+		}
+
+		@Override
+		public boolean onDown(MotionEvent e) {
+			return true;
+		}
+
 	}
 }

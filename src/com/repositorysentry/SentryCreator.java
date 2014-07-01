@@ -35,7 +35,7 @@ public class SentryCreator {
 		Repository repo = createRepository(mContext, mRepoType, mUsername,
 				mRepositoryName);
 
-		setSentry(repo);
+		//setSentry(repo);
 		
 		return repo;
 	}
@@ -64,7 +64,7 @@ public class SentryCreator {
 		// TODO: change 3nd parameter to CreateAlarmActivity.ALARM_DELAY
 		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
 				SystemClock.elapsedRealtime(),
-				CreateSentryActivity.INITIAL_ALARM_DELAY, contentIntent);
+				CreateSentryActivity.ALARM_DELAY, contentIntent);
 	}
 	
 	private void removeSentry(Repository repository) {

@@ -46,6 +46,35 @@ public class CommitInspector {
 		return newComits;
 	}
 	
+	public ArrayList<HashMap<String, String>> getCommitsHistory(
+			Repository repo) {
+		String repoId = repo.getId().toString();
+		ArrayList<HashMap<String, String>> commitsList = new ArrayList<HashMap<String, String>>();
+
+		String[] columns = new String[] { DatabaseOpenHelper.NAME_COLUMN,
+				DatabaseOpenHelper.DATE_COLUMN,
+				DatabaseOpenHelper.MESSAGE_COLUMN };
+		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { repoId };
+
+		Cursor cursor = DB.query(DatabaseOpenHelper.TABLE_NAME, columns,
+				whereClause, whereArgs, null, null, null);
+		
+		int columnNameId = cursor.getColumnIndex(DatabaseOpenHelper.NAME_COLUMN);
+		int columnDateId = cursor.getColumnIndex(DatabaseOpenHelper.DATE_COLUMN);
+		int columnMsgId = cursor.getColumnIndex(DatabaseOpenHelper.MESSAGE_COLUMN);
+
+		while (cursor.moveToNext()) {
+			HashMap<String, String> commitInfo = new HashMap<String, String>();
+			commitInfo.put(Repository.NAME_TAG, cursor.getString(columnNameId));
+			commitInfo.put(Repository.DATE_TAG, cursor.getString(columnDateId));
+			commitInfo.put(Repository.MESSAGE_TAG, cursor.getString(columnMsgId));
+			commitsList.add(commitInfo);
+		}
+		cursor.close();
+		return commitsList;
+	}
+	
 	public void remove(Repository repo) {
 		String repoId = repo.getId().toString();
 		removeRow(repoId);

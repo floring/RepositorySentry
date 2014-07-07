@@ -16,6 +16,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout="@layout/empty" />
+            android:layout="@layout/empty_history" />
 
 </LinearLayout>

@@ -22,14 +22,16 @@ public class GitRepository extends Repository {
 		mUsername = username;
 		mRepositoryName = repositoryName;
 		mDate = getDateString();
+		mRequestCode = getIntCode();
 	}
 	
-	public GitRepository(UUID id, Context context, String username, String repositoryName, String date) {
+	public GitRepository(UUID id, Context context, String username, String repositoryName, String date, int code) {
 		mId = id;
 		mContext = context;
 		mUsername = username;
 		mRepositoryName = repositoryName;
 		mDate = date;
+		mRequestCode = code;
 	}
 
 	@Override
@@ -56,6 +58,7 @@ public class GitRepository extends Repository {
 		dest.writeString(mRepositoryName);
 		dest.writeString(mDate);
 		dest.writeValue(mId);
+		dest.writeInt(mRequestCode);
 	}
 
 	/** Unpacks object from Parcel. */
@@ -75,6 +78,7 @@ public class GitRepository extends Repository {
 		mRepositoryName = in.readString();
 		mDate = in.readString();
 		mId = (UUID) in.readValue(null);
+		mRequestCode = in.readInt();
 	}
 
 	@Override

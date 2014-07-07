@@ -1,7 +1,5 @@
 package com.repositorysentry;
 
-import java.util.Calendar;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,6 +14,7 @@ public class SentryCreator {
 	private Context mContext;
 	private Repository mRepository;
 	
+	private static final long INITIAL_ALARM_DELAY = 1 * 60 * 1000L;
 	public static final String INTENT_KEY_REPO = "Repository";
 
 	public SentryCreator(Context context, String repoType, String username,
@@ -34,14 +33,17 @@ public class SentryCreator {
 	public Repository create() {
 		Repository repo = createRepository(mContext, mRepoType, mUsername,
 				mRepositoryName);
-
-		//setSentry(repo);
+		setSentry(repo);
 		
 		return repo;
 	}
 	
 	public void remove() {
 		removeSentry(mRepository);
+	}
+	
+	public void changeInterval() {
+		changeSentryInterval(mRepository);
 	}
 
 	private Repository createRepository(Context context, String repoType,
@@ -61,10 +63,9 @@ public class SentryCreator {
 		AlarmManager alarmManager = (AlarmManager) mContext
 				.getSystemService(Context.ALARM_SERVICE);
 
-		// TODO: change 3nd parameter to CreateAlarmActivity.ALARM_DELAY
 		alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-				SystemClock.elapsedRealtime(),
-				CreateSentryActivity.ALARM_DELAY, contentIntent);
+				SystemClock.elapsedRealtime() + INITIAL_ALARM_DELAY,
+				MainActivity.getAlarmInterval(), contentIntent);
 	}
 	
 	private void removeSentry(Repository repository) {
@@ -74,11 +75,18 @@ public class SentryCreator {
 		alarmManager.cancel(contentIntent);
 	}
 	
-	private PendingIntent composePendingIntent(Repository repository) {		
+	private void changeSentryInterval(Repository repository) {
+		removeSentry(repository);
+		setSentry(repository);
+	}
+	
+	private PendingIntent composePendingIntent(Repository repository) {	
+		int requestCode = repository.getRequestCode();
+		
 		Intent notificationIntent = new Intent(mContext,
-				NotificationReceiver.class);
+				NotificationReceiver.class);		
 		notificationIntent.putExtra(INTENT_KEY_REPO, repository);
-		PendingIntent contentIntent = PendingIntent.getBroadcast(mContext, 0,
+		PendingIntent contentIntent = PendingIntent.getBroadcast(mContext, requestCode,
 				notificationIntent, 0);
 
 		return contentIntent;

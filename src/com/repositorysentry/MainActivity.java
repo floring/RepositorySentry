@@ -47,6 +47,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -57,7 +58,8 @@ public class MainActivity extends Activity {
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 	private static final String FILE_SENTRIES = "SentriesData.txt";
 
-	private static long ALARM_INTERVAL;
+	private static long ALARM_INTERVAL = 5 * 60 * 1000L;
+	//private static long ALARM_INTERVAL;
 
 	private SentryItemAdapter mSentryAdapter;
 	private ListView mSentryItems;
@@ -82,7 +84,7 @@ public class MainActivity extends Activity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
-		ALARM_INTERVAL = settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY);
+		//setAlarmInterval(settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY));
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -164,7 +166,7 @@ public class MainActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong("alarmInterval", ALARM_INTERVAL);
+		editor.putLong("alarmInterval", getAlarmInterval());
 		editor.commit();
 		
 		// Close database
@@ -200,37 +202,71 @@ public class MainActivity extends Activity {
 		case R.id.action_create:
 			Intent intent = new Intent(MainActivity.this,
 					CreateSentryActivity.class);
-			intent.putExtra("Interval", ALARM_INTERVAL);
 			startActivityForResult(intent, CREATE_ALARM_ITEM_REQUEST);
-			return true;
+			break;
+		case R.id.action_reset_all:
+			deleteAll();
+			break;
+		case R.id.option_15_min:
+			if (!item.isChecked()) {
+				changeFiringPeriod(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+				item.setChecked(true);
+			}
+			break;
+		case R.id.option_30_min:
+			if (!item.isChecked()) {
+				changeFiringPeriod(AlarmManager.INTERVAL_HALF_HOUR);
+				item.setChecked(true);
+			}
+			break;
+		case R.id.option_1_hour:
+			if (!item.isChecked()) {
+				changeFiringPeriod(AlarmManager.INTERVAL_HOUR);
+				item.setChecked(true);
+			}
+			break;
+		case R.id.option_2_hour:
+			if (!item.isChecked()) {
+				changeFiringPeriod(AlarmManager.INTERVAL_HOUR * 2);
+				item.setChecked(true);
+			}
+			break;
+		case R.id.option_1_day:
+			if (!item.isChecked()) {
+				changeFiringPeriod(AlarmManager.INTERVAL_DAY);
+				item.setChecked(true);
+			}
+			break;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+		return true;
 	}
 
-	/** Load stored Sentry Items */
+	/** Load stored SentryItems */
 	private void loadItems() {
 		BufferedReader reader = null;
 		try {
 			FileInputStream fis = openFileInput(FILE_SENTRIES);
 			reader = new BufferedReader(new InputStreamReader(fis));
 
-			String repoId = null, username = null, repoName = null, date = null, type = null;
+			String repoId = null, username = null, repoName = null, date = null, type = null, code = null;
 
 			while (null != (repoId = reader.readLine())) {
 				username = reader.readLine();
 				repoName = reader.readLine();
 				date = reader.readLine();
 				type = reader.readLine();
+				code = reader.readLine();
 
 				Repository repository = null;
 				if (type.equals(Vcs.Git.toString())) {
 					repository = new GitRepository(UUID.fromString(repoId),
-							getApplicationContext(), username, repoName, date);
+							getApplicationContext(), username, repoName, date, Integer.parseInt(code));
 				} else if (type.equals(Vcs.BitBucket.toString())) {
 					repository = new BitbucketRepository(
 							UUID.fromString(repoId), getApplicationContext(),
-							username, repoName, date);
+							username, repoName, date, Integer.parseInt(code));
 				}
 				mSentryAdapter.add(repository);
 			}
@@ -270,6 +306,78 @@ public class MainActivity extends Activity {
 		}
 	}
 	
+	/** Delete Sentry item */
+	private void deleteItem(int position) {
+		Repository repoItem = (Repository) mSentryAdapter
+				.getItem(position);
+		SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
+		creator.remove();
+		
+		mInspector.remove(repoItem);		
+		mSentryAdapter.removeItem(position);		
+	}
+	
+	/** Delete all sentries */
+	private void deleteAll() {
+		if (!mSentryAdapter.isEmpty()) {
+			AlertDialog.Builder dialog = new AlertDialog.Builder(
+					MainActivity.this);
+			dialog.setTitle("Delete sentries");
+			dialog.setMessage("Are you sure you want to delete all sentries?");
+			dialog.setNegativeButton("Cancel", null);
+			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface d, int which) {
+					for (int i = 0; i < mSentryAdapter.getCount(); i++) {
+						deleteItem(i);
+					}
+					mSentryAdapter.notifyDataSetChanged();
+
+					Toast.makeText(getApplicationContext(),
+							"All sentries has been deleted", Toast.LENGTH_SHORT)
+							.show();
+				}
+			});
+			dialog.show();
+		}
+	}
+	
+	/** Change the firing period of all sentries */
+	private void changeFiringPeriod(final long interval) {
+		if (!mSentryAdapter.isEmpty()) {
+			AlertDialog.Builder dialog = new AlertDialog.Builder(
+					MainActivity.this);
+			dialog.setTitle("Change triggering period");
+			dialog.setMessage("Are you sure you want to change trigger period to all sentries?");
+			dialog.setNegativeButton("Cancel", null);
+			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					setAlarmInterval(interval);
+					for (int i = 0; i < mSentryAdapter.getCount(); i++) {
+						Repository repoItem = (Repository) mSentryAdapter
+								.getItem(i);
+						SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
+						creator.changeInterval();
+					}
+				}
+			});
+			dialog.show();
+		}
+	}
+	
+	/** Get sentries firing interval*/
+	public static long getAlarmInterval() {
+		return ALARM_INTERVAL;
+	}
+	
+	/** Set sentries firing interval*/
+	private void setAlarmInterval(long interval) {
+		ALARM_INTERVAL = interval;
+	}
+	
 	public class ListGestureDetector extends SimpleOnGestureListener {
 		
 		private int FLING_MIN_DISTANCE;
@@ -299,21 +407,14 @@ public class MainActivity extends Activity {
 					&& Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
 				
 				int positionToRemove = mSentryItems.pointToPosition(
-						(int) event1.getX(), (int) event1.getY());
-				Repository repoItem = (Repository) mSentryAdapter
-						.getItem(positionToRemove);
-				
-				SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
-				creator.remove();
-				
-				// move further to creator?
-				mInspector.remove(repoItem);
-				
-				mSentryAdapter.removeItem(positionToRemove);
+						(int) event1.getX(), (int) event1.getY());	
+				String repoName = ((Repository) mSentryAdapter
+						.getItem(positionToRemove)).getRepositoryName();
+				deleteItem(positionToRemove);
 				mSentryAdapter.notifyDataSetChanged();
-				
+							
 				Toast.makeText(getApplicationContext(),
-						"Sentry to '" + repoItem.getRepositoryName() + "' cancelled",
+						"Sentry to '" + repoName + "' cancelled",
 						Toast.LENGTH_SHORT).show();
 				return true;
 			}

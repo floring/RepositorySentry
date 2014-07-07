@@ -23,9 +23,6 @@ public class SentryItemAdapter extends BaseAdapter implements Filterable {
 	private List<Repository> mAllItems = new ArrayList<Repository>();
 	private final Context mContext;
 
-	public final static SimpleDateFormat FORMAT = new SimpleDateFormat(
-			"dd.MM.yyyy HH:mm:ss", Locale.getAvailableLocales()[0]);
-
 	public SentryItemAdapter(Context context) {
 		mContext = context;
 	}
@@ -87,7 +84,6 @@ public class SentryItemAdapter extends BaseAdapter implements Filterable {
 
 		final TextView dateView = (TextView) itemLayout
 				.findViewById(R.id.textView_alarm_listview_item_date);
-		//dateView.setText(FORMAT.format(repoItem.getDate()));
 		dateView.setText(repoItem.getDate());
 		
 		int id = 0;

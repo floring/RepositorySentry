@@ -6,6 +6,7 @@
     
     <color name="header_text">#3054B1</color>
     <color name="item_text">#070E4C</color>
+    <color name="inform_text">#929090</color>
     
     <color name="action_bar_background">#3054B1</color>
     <color name="app_text">#070E4C</color>

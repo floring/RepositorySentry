@@ -17,6 +17,7 @@
 
     <EditText
         android:id="@+id/edittext_username"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -25,7 +26,7 @@
         android:ems="10"
         android:hint="@string/edittext_username_hint"
         android:inputType="textShortMessage"
-        android:text="poiuj" >
+        android:text="floring" >
 
         <requestFocus />
     </EditText>
@@ -45,6 +46,7 @@
 
     <EditText
         android:id="@+id/edittext_repository"
+        style="@style/EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -53,13 +55,13 @@
         android:ems="10"
         android:hint="@string/edittext_reponame_hint"
         android:inputType="textShortMessage"
-        android:text="cl-text-table" >
+        android:text="RepositorySentry" >
 
         <requestFocus />
     </EditText>
-    
+
     <!-- Version Control System -->
-    
+
     <TextView
         android:id="@+id/textview_label_vcs"
         style="@style/Header"

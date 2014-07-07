@@ -30,9 +30,10 @@ public class CommitHistoryActivity extends ListActivity {
 
 		mRepository = getIntent().getParcelableExtra(
 				SentryCreator.INTENT_KEY_REPO);
-		ArrayList<HashMap<String, String>> commitList = mInspector.getCommitsHistory(mRepository);
+		ArrayList<HashMap<String, String>> commitList = mInspector
+				.getCommitsHistory(mRepository);
 
-		mAdapter = new CommitAdapter(commitList);
+		mAdapter = new CommitAdapter(this, commitList);
 		setListAdapter(mAdapter);
 	}
 
@@ -54,64 +55,10 @@ public class CommitHistoryActivity extends ListActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	private void refreshCommitHistory() {
 		ArrayList<HashMap<String, String>> commits = mRepository.getCommits();
 		mInspector.getNewCommits(mRepository, commits);
 		mAdapter.refresh(commits);
 	}
-
-
-	
-    private class CommitAdapter extends BaseAdapter {
-    	
-    	private ArrayList<HashMap<String, String>> mCommits;
-
-        public CommitAdapter(ArrayList<HashMap<String, String>> commits) {
-        	mCommits = commits;
-        }
-
-        public void refresh(ArrayList<HashMap<String, String>> commits) {
-        	mCommits.clear();
-        	mCommits.addAll(commits);
-    		notifyDataSetChanged();
-    	}
-
-        @Override
-        public int getCount() {
-            return mCommits.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mCommits.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getLayoutInflater().inflate(R.layout.commit_list_item, parent, false);
-            }           
-            final HashMap<String, String> commitItem = (HashMap<String, String>) getItem(position);
-            
-            final TextView commiterNameView = (TextView) convertView
-    				.findViewById(R.id.commiterName);
-            commiterNameView.setText(commitItem.get(Repository.NAME_TAG));
-            
-            final TextView commitDateView = (TextView) convertView
-    				.findViewById(R.id.commitDate);
-            commitDateView.setText(commitItem.get(Repository.DATE_TAG));
-            
-            final TextView commitMessageView = (TextView) convertView
-    				.findViewById(R.id.commitMessage);
-            commitMessageView.setText(commitItem.get(Repository.MESSAGE_TAG));
-
-            return convertView;
-		}
-    }
 }

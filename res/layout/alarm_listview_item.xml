@@ -9,9 +9,7 @@
         style="@style/ListItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:text="@string/textview_alarm_repository"
-        android:textSize="16sp" />
+        android:text="@string/textview_alarm_repository" />
 
     <TextView
         android:id="@+id/textView_alarm_listview_item_username"
@@ -19,9 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_alarm_listview_item_repository"
-        android:paddingLeft="20dp"
-        android:text="@string/textview_alarm_username"
-        android:textSize="16sp" />
+        android:text="@string/textview_alarm_username"/>
 
     <TextView
         android:id="@+id/textView_alarm_listview_item_date"
@@ -29,9 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_alarm_listview_item_username"
-        android:paddingLeft="20dp"
-        android:text="@string/textview_alarm_date"
-        android:textSize="16sp" />
+        android:text="@string/textview_alarm_date"/>
 
     <ImageView
         android:id="@+id/item_alarm_listview_vcs"

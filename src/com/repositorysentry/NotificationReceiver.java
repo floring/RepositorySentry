@@ -31,13 +31,14 @@ public class NotificationReceiver extends BroadcastReceiver {
 		mContentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		
+		ArrayList<HashMap<String, String>> newCommitsData = null;
 		if(commits != null) {
 			CommitInspector inspector = CommitInspector.getInstance();
 			if(inspector.DB == null || !inspector.DB.isOpen()) {
 				inspector.DbHelper = new DatabaseOpenHelper(context);
 				inspector.DB = inspector.DbHelper.getWritableDatabase();
 			}
-			ArrayList<HashMap<String, String>> newCommitsData = inspector
+			newCommitsData = inspector
 					.getNewCommits(repository, commits);
 			
 			if (!newCommitsData.isEmpty()) {
@@ -51,13 +52,11 @@ public class NotificationReceiver extends BroadcastReceiver {
 		else {
 			CharSequence tickerText = context.getResources().getText(R.string.app_name) + " report";
 			CharSequence contentTitle = "Failed to obtain commits";
-			CharSequence contentText = "Please, check the data is spelled correctly.";
+			CharSequence contentText = "Please, check the repository data is spelled correctly.";
 			sendNotification(context, tickerText, contentTitle, contentText);
-		}
-
-	
+		}	
 		
-		Log.i(TAG, "test: " + repository.getRepositoryName() + ". Sending commit notification at:"
+		Log.i(TAG, "New commits: " + newCommitsData.size() +  ". " + repository.getRepositoryName() + ". Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
 	}
 	

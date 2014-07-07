@@ -27,14 +27,16 @@ public class BitbucketRepository extends Repository {
 		mUsername = username;
 		mRepositoryName = repositoryName;
 		mDate = getDateString();
+		mRequestCode = getIntCode();
 	}
 	
-	public BitbucketRepository(UUID id, Context context, String username, String repositoryName, String date) {
+	public BitbucketRepository(UUID id, Context context, String username, String repositoryName, String date, int code) {
 		mId = id;
 		mContext = context;
 		mUsername = username;
 		mRepositoryName = repositoryName;
 		mDate = date;
+		mRequestCode = code;
 	}
 
 	@Override
@@ -61,6 +63,7 @@ public class BitbucketRepository extends Repository {
 		dest.writeString(mRepositoryName);
 		dest.writeString(mDate);
 		dest.writeValue(mId);
+		dest.writeInt(mRequestCode);
 	}
 
 	/** Unpacks object from Parcel. */
@@ -79,7 +82,8 @@ public class BitbucketRepository extends Repository {
 		mUsername = in.readString();
 		mRepositoryName = in.readString();
 		mDate = in.readString();
-		mId = (UUID) in.readValue(null);		
+		mId = (UUID) in.readValue(null);
+		mRequestCode = in.readInt();
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Repository Sentry</string>
+    <string name="app_name">RepoSentry</string>
     <string name="action_settings">Settings</string>
     
     <!-- **** Strings for List Fragment for each Relation **** -->
@@ -39,7 +39,7 @@
     <string name="vcs_bitbucket">BitBucket</string>
     
     <!-- Informative Strings -->
-    <string name="no_commits">There is no commits!</string>
-    <string name="no_sentries">There is no sentries!</string>
+    <string name="no_commits">There are no commits yet!</string>
+    <string name="no_sentries">There are no sentries!</string>
 
 </resources>

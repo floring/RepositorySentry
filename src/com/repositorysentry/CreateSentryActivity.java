@@ -29,8 +29,6 @@ public class CreateSentryActivity extends Activity {
 	
 	private static int DEFAULT_REPO_TYPE = 0; 
 	
-	public static long ALARM_DELAY;
-	public static final long INITIAL_ALARM_DELAY = 5 * 60 * 1000L;
 	public static final String INTENT_KEY_SENTRY = "SentryItem";
 
 	@Override
@@ -44,10 +42,7 @@ public class CreateSentryActivity extends Activity {
 		mSpinnerVcs.setSelection(DEFAULT_REPO_TYPE);
 
 		mUsernameText = (EditText) findViewById(R.id.edittext_username);
-		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
-
-		ALARM_DELAY = getIntent().getLongExtra("Interval", MainActivity.DEFAULT_ALARM_DELAY);
-		
+		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);		
 
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);

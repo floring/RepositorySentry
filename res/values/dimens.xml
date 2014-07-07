@@ -10,6 +10,7 @@
     <dimen name="btn_width">120dp</dimen>
     <dimen name="btn_text_padding">2dp</dimen>
     
-    
+    <!-- ListView -->
+    <dimen name="listview_divider">1dp</dimen>
 
 </resources>

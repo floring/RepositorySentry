@@ -2,13 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/textView_alarm_listview_item_repository"
         style="@style/ListItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="@string/textview_alarm_repository" />
 
     <TextView
@@ -34,6 +37,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         android:layout_marginTop="5dp"
-        android:contentDescription="VCS"/>
+        android:contentDescription="@string/imageview_alarm_type"/>
 
 </RelativeLayout>

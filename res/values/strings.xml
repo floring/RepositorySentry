@@ -32,7 +32,7 @@
     <string name="textview_alarm_username">username</string>
     <string name="textview_alarm_repository">repository</string>
     <string name="textview_alarm_date">date</string>
-    
+    <string name="imageview_alarm_type">vcs</string>
     
     <!-- VCS Names Strings -->
     <string name="vcs_git">Git</string>

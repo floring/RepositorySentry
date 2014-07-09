@@ -58,8 +58,8 @@ public class MainActivity extends Activity {
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 	private static final String FILE_SENTRIES = "SentriesData.txt";
 
-	private static long ALARM_INTERVAL = 5 * 60 * 1000L;
-	//private static long ALARM_INTERVAL;
+	// private static long ALARM_INTERVAL = 5 * 60 * 1000L;
+	private static long ALARM_INTERVAL;
 
 	private SentryItemAdapter mSentryAdapter;
 	private ListView mSentryItems;
@@ -70,10 +70,11 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.alarm_listview);
-		
+
 		mInspector = CommitInspector.getInstance();
-		if(mInspector.DB == null || !mInspector.DB.isOpen()) {
-			mInspector.DbHelper = new DatabaseOpenHelper(getApplicationContext());
+		if (mInspector.DB == null || !mInspector.DB.isOpen()) {
+			mInspector.DbHelper = new DatabaseOpenHelper(
+					getApplicationContext());
 			mInspector.DB = mInspector.DbHelper.getWritableDatabase();
 		}
 
@@ -84,7 +85,7 @@ public class MainActivity extends Activity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
-		//setAlarmInterval(settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY));
+		setAlarmInterval(settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY));
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -93,7 +94,8 @@ public class MainActivity extends Activity {
 		final double velocity = 200.0f * dm.densityDpi / 160.0f + 0.5;
 
 		final GestureDetector gestureDetector = new GestureDetector(
-				getApplicationContext(), new ListGestureDetector(minDistance, maxPath, velocity));
+				getApplicationContext(), new ListGestureDetector(minDistance,
+						maxPath, velocity));
 		mSentryItems.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -102,7 +104,7 @@ public class MainActivity extends Activity {
 				return gestureDetector.onTouchEvent(event);
 			}
 		});
-		
+
 		mEtItemsFilter = (EditText) findViewById(R.id.edittext_alarm_listview_filter);
 		mEtItemsFilter.addTextChangedListener(new TextWatcher() {
 
@@ -122,7 +124,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable arg0) {
-				
+
 			}
 		});
 	}
@@ -149,7 +151,7 @@ public class MainActivity extends Activity {
 			loadItems();
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -168,7 +170,7 @@ public class MainActivity extends Activity {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putLong("alarmInterval", getAlarmInterval());
 		editor.commit();
-		
+
 		// Close database
 		if (mInspector.DB != null) {
 			if (mInspector.DB.isOpen()) {
@@ -209,32 +211,27 @@ public class MainActivity extends Activity {
 			break;
 		case R.id.option_15_min:
 			if (!item.isChecked()) {
-				changeFiringPeriod(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
-				item.setChecked(true);
+				changeFiringPeriod(AlarmManager.INTERVAL_FIFTEEN_MINUTES, item);
 			}
 			break;
 		case R.id.option_30_min:
 			if (!item.isChecked()) {
-				changeFiringPeriod(AlarmManager.INTERVAL_HALF_HOUR);
-				item.setChecked(true);
+				changeFiringPeriod(AlarmManager.INTERVAL_HALF_HOUR, item);
 			}
 			break;
 		case R.id.option_1_hour:
 			if (!item.isChecked()) {
-				changeFiringPeriod(AlarmManager.INTERVAL_HOUR);
-				item.setChecked(true);
+				changeFiringPeriod(AlarmManager.INTERVAL_HOUR, item);
 			}
 			break;
 		case R.id.option_2_hour:
 			if (!item.isChecked()) {
-				changeFiringPeriod(AlarmManager.INTERVAL_HOUR * 2);
-				item.setChecked(true);
+				changeFiringPeriod(AlarmManager.INTERVAL_HOUR * 2, item);
 			}
 			break;
 		case R.id.option_1_day:
 			if (!item.isChecked()) {
-				changeFiringPeriod(AlarmManager.INTERVAL_DAY);
-				item.setChecked(true);
+				changeFiringPeriod(AlarmManager.INTERVAL_DAY, item);
 			}
 			break;
 		default:
@@ -262,7 +259,8 @@ public class MainActivity extends Activity {
 				Repository repository = null;
 				if (type.equals(Vcs.Git.toString())) {
 					repository = new GitRepository(UUID.fromString(repoId),
-							getApplicationContext(), username, repoName, date, Integer.parseInt(code));
+							getApplicationContext(), username, repoName, date,
+							Integer.parseInt(code));
 				} else if (type.equals(Vcs.BitBucket.toString())) {
 					repository = new BitbucketRepository(
 							UUID.fromString(repoId), getApplicationContext(),
@@ -305,93 +303,113 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+
 	/** Delete Sentry item */
 	private void deleteItem(int position) {
-		Repository repoItem = (Repository) mSentryAdapter
-				.getItem(position);
-		SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
+		Repository repoItem = (Repository) mSentryAdapter.getItem(position);
+		SentryCreator creator = new SentryCreator(getApplicationContext(),
+				repoItem);
 		creator.remove();
-		
-		mInspector.remove(repoItem);		
-		mSentryAdapter.removeItem(position);		
+
+		mInspector.remove(repoItem);
+		mSentryAdapter.removeItem(position);
 	}
-	
+
 	/** Delete all sentries */
 	private void deleteAll() {
 		if (!mSentryAdapter.isEmpty()) {
 			AlertDialog.Builder dialog = new AlertDialog.Builder(
 					MainActivity.this);
-			dialog.setTitle("Delete sentries");
-			dialog.setMessage("Are you sure you want to delete all sentries?");
-			dialog.setNegativeButton("Cancel", null);
-			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+			dialog.setTitle(R.string.dialog_title_delete_all);
+			dialog.setMessage(R.string.dialog_msg_delete_all);
+			dialog.setNegativeButton(R.string.dialog_cancel, null);
+			dialog.setPositiveButton(R.string.dialog_ok,
+					new AlertDialog.OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface d, int which) {
-					for (int i = 0; i < mSentryAdapter.getCount(); i++) {
-						deleteItem(i);
-					}
-					mSentryAdapter.notifyDataSetChanged();
+						@Override
+						public void onClick(DialogInterface d, int which) {
+							for (int i = 0; i < mSentryAdapter.getCount(); i++) {
+								deleteItem(i);
+							}
+							mSentryAdapter.notifyDataSetChanged();
 
-					Toast.makeText(getApplicationContext(),
-							"All sentries has been deleted", Toast.LENGTH_SHORT)
-							.show();
-				}
-			});
+							Toast.makeText(getApplicationContext(),
+									R.string.toast_delete_all,
+									Toast.LENGTH_SHORT).show();
+						}
+					});
 			dialog.show();
 		}
 	}
-	
+
 	/** Change the firing period of all sentries */
-	private void changeFiringPeriod(final long interval) {
+	private void changeFiringPeriod(final long interval, final MenuItem item) {
 		if (!mSentryAdapter.isEmpty()) {
 			AlertDialog.Builder dialog = new AlertDialog.Builder(
 					MainActivity.this);
-			dialog.setTitle("Change triggering period");
-			dialog.setMessage("Are you sure you want to change trigger period to all sentries?");
-			dialog.setNegativeButton("Cancel", null);
-			dialog.setPositiveButton("OK", new AlertDialog.OnClickListener() {
+			dialog.setTitle(R.string.dialog_title_change_period);
+			dialog.setMessage(R.string.dialog_msg_change_period);
+			dialog.setNegativeButton(R.string.dialog_cancel, null);
+			dialog.setPositiveButton(R.string.dialog_ok,
+					new AlertDialog.OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					setAlarmInterval(interval);
-					for (int i = 0; i < mSentryAdapter.getCount(); i++) {
-						Repository repoItem = (Repository) mSentryAdapter
-								.getItem(i);
-						SentryCreator creator = new SentryCreator(getApplicationContext(), repoItem);
-						creator.changeInterval();
-					}
-				}
-			});
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							setAlarmInterval(interval);
+							for (int i = 0; i < mSentryAdapter.getCount(); i++) {
+								/*
+								 * Repository repoItem = (Repository)
+								 * mSentryAdapter .getItem(i);
+								 * 
+								 * SentryCreator creator = new
+								 * SentryCreator(getApplicationContext(),
+								 * repoItem); creator.changeInterval();
+								 */
+								Repository repoItem = (Repository) mSentryAdapter
+										.getItem(i);
+								String repoType = repoItem.getType();
+								String username = repoItem.getUsername();
+								String repoName = repoItem.getRepositoryName();
+
+								SentryCreator creator = new SentryCreator(
+										getApplicationContext(), repoItem);
+								creator.remove();
+								mSentryAdapter.removeItem(i);
+								
+								creator = new SentryCreator(getApplicationContext(), repoType, username, repoName);
+								Repository repo = creator.create();
+								mSentryAdapter.add(repo);
+							}
+							item.setChecked(true);
+							mSentryAdapter.notifyDataSetChanged();
+						}
+					});
 			dialog.show();
 		}
 	}
-	
-	/** Get sentries firing interval*/
+
+	/** Get sentries firing interval */
 	public static long getAlarmInterval() {
 		return ALARM_INTERVAL;
 	}
-	
-	/** Set sentries firing interval*/
+
+	/** Set sentries firing interval */
 	private void setAlarmInterval(long interval) {
 		ALARM_INTERVAL = interval;
 	}
-	
+
 	public class ListGestureDetector extends SimpleOnGestureListener {
-		
+
 		private int FLING_MIN_DISTANCE;
 		private int FLING_MAX_OFF_PATH;
 		private double FLING_THRESHOLD_VELOCITY;
 
-
-		public ListGestureDetector(int minDistance, int maxPath,
-				double velocity) {
+		public ListGestureDetector(int minDistance, int maxPath, double velocity) {
 			FLING_MIN_DISTANCE = minDistance;
 			FLING_MAX_OFF_PATH = maxPath;
 			FLING_THRESHOLD_VELOCITY = velocity;
 		}
-		
+
 		@Override
 		public boolean onFling(MotionEvent event1, MotionEvent event2,
 				float velocityX, float velocityY) {
@@ -405,22 +423,22 @@ public class MainActivity extends Activity {
 
 			} else if (event2.getX() - event1.getX() > FLING_MIN_DISTANCE
 					&& Math.abs(velocityX) > FLING_THRESHOLD_VELOCITY) {
-				
+
 				int positionToRemove = mSentryItems.pointToPosition(
-						(int) event1.getX(), (int) event1.getY());	
+						(int) event1.getX(), (int) event1.getY());
 				String repoName = ((Repository) mSentryAdapter
 						.getItem(positionToRemove)).getRepositoryName();
 				deleteItem(positionToRemove);
 				mSentryAdapter.notifyDataSetChanged();
-							
+
 				Toast.makeText(getApplicationContext(),
-						"Sentry to '" + repoName + "' cancelled",
+						repoName + getResources().getText(R.string.toast_sentry_cancel),
 						Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			return false;
 		}
-		
+
 		@Override
 		public boolean onSingleTapConfirmed(MotionEvent e) {
 			int itemPosition = mSentryItems.pointToPosition((int) e.getX(),
@@ -430,7 +448,8 @@ public class MainActivity extends Activity {
 
 			Intent commitHistoryIntent = new Intent(getApplicationContext(),
 					CommitHistoryActivity.class);
-			commitHistoryIntent.putExtra(SentryCreator.INTENT_KEY_REPO, repoItem);
+			commitHistoryIntent.putExtra(SentryCreator.INTENT_KEY_REPO,
+					repoItem);
 			startActivity(commitHistoryIntent);
 
 			return true;

@@ -41,5 +41,22 @@
     <!-- Informative Strings -->
     <string name="no_commits">There are no commits yet!</string>
     <string name="no_sentries">There are no sentries!</string>
+    <string name="you_get_new_commits">You\'ve got new commits!</string>
+    <string name="new_commits_number">The number of new commits is&#160;</string>
+    <string name="fail_notif_title">Failed to obtain commits</string>
+    <string name="fail_notif_msg">Please, check the repository data is spelled correctly.</string>
+    <string name="report">&#160;report</string>
+    
+    <!-- Dialog Strings -->
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_title_delete_all">Delete sentries</string>
+    <string name="dialog_msg_delete_all">Are you sure you want to delete all sentries?</string>
+    <string name="dialog_title_change_period">Change triggering period</string>
+    <string name="dialog_msg_change_period">Are you sure you want to change trigger period to all sentries?</string>
+    
+    <!-- Toast Strings -->
+    <string name="toast_delete_all">All sentries has been deleted</string>    
+    <string name="toast_sentry_cancel">&#160;sentry canceled</string>
 
 </resources>

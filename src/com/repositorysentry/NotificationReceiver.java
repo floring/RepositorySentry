@@ -29,7 +29,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 		ArrayList<HashMap<String, String>> commits = repository.getCommits();
 		Intent notificationIntent = new Intent(context, MainActivity.class);
 		mContentIntent = PendingIntent.getActivity(context, 0,
-				notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+				notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		ArrayList<HashMap<String, String>> newCommitsData = null;
 		if(commits != null) {
@@ -42,17 +42,16 @@ public class NotificationReceiver extends BroadcastReceiver {
 					.getNewCommits(repository, commits);
 			
 			if (!newCommitsData.isEmpty()) {
-				CharSequence tickerText = "You've got new commits!";
+				CharSequence tickerText = context.getResources().getText(R.string.you_get_new_commits);
 				CharSequence contentTitle = repository.getRepositoryName();
-				CharSequence contentText = "You've got " + newCommitsData.size()
-						+ " new commits";
+				CharSequence contentText = context.getResources().getString(R.string.new_commits_number) + newCommitsData.size();
 				sendNotification(context, tickerText, contentTitle, contentText);
 			}
 		}
 		else {
-			CharSequence tickerText = context.getResources().getText(R.string.app_name) + " report";
-			CharSequence contentTitle = "Failed to obtain commits";
-			CharSequence contentText = "Please, check the repository data is spelled correctly.";
+			CharSequence tickerText = context.getResources().getString(R.string.app_name) + context.getResources().getString(R.string.report);
+			CharSequence contentTitle = context.getResources().getString(R.string.fail_notif_title);
+			CharSequence contentText = context.getResources().getString(R.string.fail_notif_msg);
 			sendNotification(context, tickerText, contentTitle, contentText);
 		}	
 		
@@ -66,7 +65,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 		Notification.Builder notificationBuilder = new Notification.Builder(
 				context).setTicker(tickerText).setContentTitle(contentTitle)
 				.setContentText(contentText).setAutoCancel(true)
-				.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setSmallIcon(R.drawable.ic_launcher)
 				.setVibrate(VIBRATE_PATTERN).setContentIntent(mContentIntent);
 		notificationManager.notify(COMMIT_NOTIFICATION_ID,
 				notificationBuilder.build());

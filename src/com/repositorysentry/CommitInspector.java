@@ -84,6 +84,18 @@ public class CommitInspector {
 		String repoId = repo.getId().toString();
 		removeRow(repoId);
 	}
+	
+	public void update(String oldId, String newId) {
+		updateUid(oldId, newId);
+	}
+	
+	private void updateUid(String oldId, String newId) {
+		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";
+		String[] whereArgs = new String[] { oldId };
+		ContentValues values = new ContentValues();
+		values.put(DatabaseOpenHelper.REPOSITORY_ID_COLUMN, newId);
+		DB.update(DatabaseOpenHelper.TABLE_NAME, values, whereClause, whereArgs);		
+	}
 
 	private void removeRow(String id) {
 		String whereClause = DatabaseOpenHelper.REPOSITORY_ID_COLUMN + "=?";

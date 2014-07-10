@@ -59,6 +59,11 @@ public class SentryItemAdapter extends BaseAdapter implements Filterable {
 	public long getItemId(int id) {
 		return id;
 	}
+	
+	public void setEmptyData(List<Repository> data) {
+		mItems = data;
+		notifyDataSetChanged();
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {

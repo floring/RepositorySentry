@@ -50,7 +50,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
 
 	public static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
@@ -149,6 +149,13 @@ public class MainActivity extends Activity {
 		// Load saved SentryItems, if necessary
 		if (mSentryAdapter.getCount() == 0) {
 			loadItems();
+			setStubView();
+		}
+	}
+	
+	private void setStubView() {
+		if(mSentryAdapter.getCount() == 0) {
+			mSentryAdapter.setEmptyData(new ArrayList<Repository>());
 		}
 	}
 
@@ -367,6 +374,7 @@ public class MainActivity extends Activity {
 								 */
 								Repository repoItem = (Repository) mSentryAdapter
 										.getItem(i);
+								String id = repoItem.getId().toString();
 								String repoType = repoItem.getType();
 								String username = repoItem.getUsername();
 								String repoName = repoItem.getRepositoryName();
@@ -379,12 +387,17 @@ public class MainActivity extends Activity {
 								creator = new SentryCreator(getApplicationContext(), repoType, username, repoName);
 								Repository repo = creator.create();
 								mSentryAdapter.add(repo);
+								
+								mInspector.update(id, repo.getId().toString());
 							}
 							item.setChecked(true);
 							mSentryAdapter.notifyDataSetChanged();
 						}
 					});
 			dialog.show();
+		}
+		else {
+			item.setChecked(true);
 		}
 	}
 

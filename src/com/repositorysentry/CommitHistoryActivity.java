@@ -58,7 +58,9 @@ public class CommitHistoryActivity extends ListActivity {
 
 	private void refreshCommitHistory() {
 		ArrayList<HashMap<String, String>> commits = mRepository.getCommits();
-		mInspector.getNewCommits(mRepository, commits);
-		mAdapter.refresh(commits);
+		if (commits != null) {
+			mInspector.getNewCommits(mRepository, commits);
+			mAdapter.refresh(commits);
+		}
 	}
 }

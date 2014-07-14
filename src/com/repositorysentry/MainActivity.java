@@ -58,8 +58,8 @@ public class MainActivity extends ListActivity {
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
 	private static final String FILE_SENTRIES = "SentriesData.txt";
 
-	// private static long ALARM_INTERVAL = 5 * 60 * 1000L;
-	private static long ALARM_INTERVAL;
+	private static long ALARM_INTERVAL = 5 * 60 * 1000L;
+	//private static long ALARM_INTERVAL;
 
 	private SentryItemAdapter mSentryAdapter;
 	private ListView mSentryItems;
@@ -85,7 +85,7 @@ public class MainActivity extends ListActivity {
 		// Restore preferences
 		SharedPreferences settings = getSharedPreferences(APP_SETTINGS,
 				MODE_PRIVATE);
-		setAlarmInterval(settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY));
+		//setAlarmInterval(settings.getLong("alarmInterval", DEFAULT_ALARM_DELAY));
 
 		// Calculate touch parameters based on display metrics
 		DisplayMetrics dm = getResources().getDisplayMetrics();

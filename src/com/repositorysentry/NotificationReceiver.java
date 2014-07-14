@@ -31,7 +31,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 		mContentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 		
-		ArrayList<HashMap<String, String>> newCommitsData = null;
+		ArrayList<HashMap<String, String>> newCommitsData = new ArrayList<HashMap<String, String>>();
 		if(commits != null) {
 			CommitInspector inspector = CommitInspector.getInstance();
 			if(inspector.DB == null || !inspector.DB.isOpen()) {
@@ -49,8 +49,10 @@ public class NotificationReceiver extends BroadcastReceiver {
 			}
 		}
 		else {
-			CharSequence tickerText = context.getResources().getString(R.string.app_name) + context.getResources().getString(R.string.report);
-			CharSequence contentTitle = context.getResources().getString(R.string.fail_notif_title);
+			//CharSequence tickerText = context.getResources().getString(R.string.app_name) + context.getResources().getString(R.string.report);
+			//CharSequence contentTitle = repository.getRepositoryName() + context.getResources().getString(R.string.fail_notif_title);
+			CharSequence tickerText = context.getResources().getString(R.string.fail_notif_title);
+			CharSequence contentTitle = repository.getRepositoryName();
 			CharSequence contentText = context.getResources().getString(R.string.fail_notif_msg);
 			sendNotification(context, tickerText, contentTitle, contentText);
 		}	

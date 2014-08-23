@@ -20,6 +20,7 @@ import java.util.UUID;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -53,6 +54,8 @@ import android.widget.Toast;
 public class MainActivity extends ListActivity {
 
 	public static final long DEFAULT_ALARM_DELAY = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+	
+	private static final String TAG = "RepositorySentryApp";
 
 	private static final int CREATE_ALARM_ITEM_REQUEST = 0;
 	private static final String APP_SETTINGS = "RepoSentryPrefsFile";
@@ -473,5 +476,25 @@ public class MainActivity extends ListActivity {
 			return true;
 		}
 
+	}
+	
+	public void dump() {
+		if(mSentryAdapter.isEmpty()) {
+			log("There are no sentries");
+			return;
+		}
+		for (int i = 0; i < mSentryAdapter.getCount(); i++) {
+			String data = ((Repository) mSentryAdapter.getItem(i)).toLog();
+			log(data.replace(Repository.ITEM_SEP, ","));
+		}
+	}
+
+	private void log(String msg) {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Log.i(TAG, msg);
 	}
 }

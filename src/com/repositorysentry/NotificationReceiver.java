@@ -59,6 +59,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 		
 		Log.i(TAG, "New commits: " + newCommitsData.size() +  ". " + repository.getRepositoryName() + ". Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
+				
+		/*Log.i(TAG, "New commits: " + 256 +  ". " + "lala" + ". Sending commit notification at:"
+				+ DateFormat.getDateTimeInstance().format(new Date()));*/
 	}
 	
 	private void sendNotification(Context context, CharSequence tickerText, CharSequence contentTitle, CharSequence contentText) {		

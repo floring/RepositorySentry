@@ -46,8 +46,8 @@ public abstract class Repository implements Parcelable {
 	protected String getDate() {
 		return mDate;
 	}
-	
-	protected int getRequestCode() {
+
+	public int getRequestCode() {
 		return mRequestCode;
 	}
 
@@ -74,35 +74,39 @@ public abstract class Repository implements Parcelable {
 	}
 
 	protected String getDateString() {
-		/*Calendar c = Calendar.getInstance();
-		int year = c.get(Calendar.YEAR);
-		int monthOfYear = c.get(Calendar.MONTH);
-		int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-
-		// Increment monthOfYear for Calendar/Date -> Time Format setting
-		monthOfYear++;
-		String mon = "" + monthOfYear;
-		String day = "" + dayOfMonth;
-
-		if (monthOfYear < 10)
-			mon = "0" + monthOfYear;
-		if (dayOfMonth < 10)
-			day = "0" + dayOfMonth;
-
-		String dateString = day + "." + mon + "." + year;
-		*/
+		/*
+		 * Calendar c = Calendar.getInstance(); int year = c.get(Calendar.YEAR);
+		 * int monthOfYear = c.get(Calendar.MONTH); int dayOfMonth =
+		 * c.get(Calendar.DAY_OF_MONTH);
+		 * 
+		 * // Increment monthOfYear for Calendar/Date -> Time Format setting
+		 * monthOfYear++; String mon = "" + monthOfYear; String day = "" +
+		 * dayOfMonth;
+		 * 
+		 * if (monthOfYear < 10) mon = "0" + monthOfYear; if (dayOfMonth < 10)
+		 * day = "0" + dayOfMonth;
+		 * 
+		 * String dateString = day + "." + mon + "." + year;
+		 */
 		Calendar c = Calendar.getInstance();
-		String dateString = FORMAT.format(c.getTime());		
+		String dateString = FORMAT.format(c.getTime());
 
 		return dateString;
 	}
-	
+
 	protected int getIntCode() {
-		return (int)(System.currentTimeMillis()/1000);
+		return (int) (System.currentTimeMillis() / 1000);
 	}
 
 	public String toString() {
 		return mId + ITEM_SEP + mUsername + ITEM_SEP + mRepositoryName
-				+ ITEM_SEP + mDate + ITEM_SEP + getType() + ITEM_SEP + mRequestCode;
+				+ ITEM_SEP + mDate + ITEM_SEP + getType() + ITEM_SEP
+				+ mRequestCode;
+	}
+
+	public String toLog() {
+		return "Username:" + mUsername + ITEM_SEP + "Repository:"
+				+ mRepositoryName + ITEM_SEP + "Type:" + getType();
+
 	}
 }

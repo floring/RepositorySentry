@@ -1,48 +1,38 @@
 package com.repositorysentry;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class CreateSentryActivity extends Activity {
 
 	private EditText mUsernameText;
 	private EditText mRepositoryText;
 	private Spinner mSpinnerVcs;
-	
-	private static int DEFAULT_REPO_TYPE = 0; 
-	
+
+	private static int DEFAULT_REPO_TYPE = 0;
+
 	public static final String INTENT_KEY_SENTRY = "SentryItem";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_alarm);
-		
+
 		mSpinnerVcs = (Spinner) findViewById(R.id.spinnerVcs);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.vcs, R.layout.vsc_dropdown_item);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				this, R.array.vcs, R.layout.vsc_dropdown_item);
 		mSpinnerVcs.setAdapter(adapter);
 		mSpinnerVcs.setSelection(DEFAULT_REPO_TYPE);
 
 		mUsernameText = (EditText) findViewById(R.id.edittext_username);
-		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);		
+		mRepositoryText = (EditText) findViewById(R.id.edittext_repository);
 
 		// OnClickListener for Clear All Button
 		final Button buttonClear = (Button) findViewById(R.id.button_clear);
@@ -64,14 +54,16 @@ public class CreateSentryActivity extends Activity {
 				String username = mUsernameText.getText().toString();
 				String repositoryName = mRepositoryText.getText().toString();
 				String repoType = mSpinnerVcs.getSelectedItem().toString();
-				
-				SentryCreator sentryCreator = new SentryCreator(getApplicationContext(), repoType, username, repositoryName);
+
+				SentryCreator sentryCreator = new SentryCreator(
+						getApplicationContext(), repoType, username,
+						repositoryName);
 				Repository repo = sentryCreator.create();
-				
+
 				Intent intent = new Intent();
 				intent.putExtra(INTENT_KEY_SENTRY, repo);
 				setResult(RESULT_OK, intent);
-				
+
 				finish();
 			}
 		});

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="vcs">
+        <item>@string/vcs_git</item>
+        <item>@string/vcs_bitbucket</item>
+    </string-array>
+</resources>

@@ -1,5 +1,8 @@
 package com.repositorysentry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,74 +10,71 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.text.DateFormat;
 
 public class NotificationReceiver extends BroadcastReceiver {
-
+	
 	private static final String TAG = "CommitNotificationReceiver";
-
-	private Intent mNotificationIntent;
+	
 	private PendingIntent mContentIntent;
-
+	
 	private static final int COMMIT_NOTIFICATION_ID = 1;
-	private long[] mVibratePattern = { 0, 200, 200, 300 };
+	private static final long[] VIBRATE_PATTERN = { 0, 200, 200, 300 };
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		String username = intent.getStringExtra("Username");
-		String repositoryName = intent.getStringExtra("RepositoryName");
-
-		mNotificationIntent = new Intent(context, MainActivity.class);
-		// mNotificationIntent.putExtras(intent.getExtras());
+		
+		Repository repository = intent.getParcelableExtra(SentryCreator.INTENT_KEY_REPO);
+		ArrayList<HashMap<String, String>> commits = repository.getCommits();
+		Intent notificationIntent = new Intent(context, MainActivity.class);
 		mContentIntent = PendingIntent.getActivity(context, 0,
-				mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-
-		CommitHistoryParsing commitHistory = new CommitHistoryParsing(context);
-		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
-				.getCommitsHistory(username, repositoryName);
-
-		CommitInspector inspector = CommitInspector.getInstance();
-		if (inspector.mDB == null) {
-			inspector.mDbHelper = new DatabaseOpenHelper(context);
-			inspector.mDB = inspector.mDbHelper.getWritableDatabase();
-		} else {
-			if (!inspector.mDB.isOpen()) {
-				inspector.mDbHelper = new DatabaseOpenHelper(context);
-				inspector.mDB = inspector.mDbHelper.getWritableDatabase();
+				notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+		
+		ArrayList<HashMap<String, String>> newCommitsData = new ArrayList<HashMap<String, String>>();
+		if(commits != null) {
+			CommitInspector inspector = CommitInspector.getInstance();
+			if(inspector.DB == null || !inspector.DB.isOpen()) {
+				inspector.DbHelper = new DatabaseOpenHelper(context);
+				inspector.DB = inspector.DbHelper.getWritableDatabase();
+			}
+			newCommitsData = inspector
+					.getNewCommits(repository, commits);
+			
+			if (!newCommitsData.isEmpty()) {
+				CharSequence tickerText = context.getResources().getText(R.string.you_get_new_commits);
+				CharSequence contentTitle = repository.getRepositoryName();
+				CharSequence contentText = context.getResources().getString(R.string.new_commits_number) + newCommitsData.size();
+				sendNotification(context, tickerText, contentTitle, contentText);
 			}
 		}
-
-		ArrayList<HashMap<String, String>> newCommitsData = inspector
-				.getNewCommits(repositoryName, commitsInfo);
-
-		if (!newCommitsData.isEmpty()) {
-			CharSequence contentText = "You've got " + newCommitsData.size()
-					+ " new commits";
-			CharSequence tickerText = "You've got new commits!";
-			sendNotification(context, newCommitsData, contentText, tickerText, repositoryName);
-		}
-
-		Log.i(TAG, "New commits count: " + newCommitsData.size()
-				+ ". Sending commit notification at:"
+		else {
+			//CharSequence tickerText = context.getResources().getString(R.string.app_name) + context.getResources().getString(R.string.report);
+			//CharSequence contentTitle = repository.getRepositoryName() + context.getResources().getString(R.string.fail_notif_title);
+			CharSequence tickerText = context.getResources().getString(R.string.fail_notif_title);
+			CharSequence contentTitle = repository.getRepositoryName();
+			CharSequence contentText = context.getResources().getString(R.string.fail_notif_msg);
+			sendNotification(context, tickerText, contentTitle, contentText);
+		}	
+		
+		Log.i(TAG, "New commits: " + newCommitsData.size() +  ". " + repository.getRepositoryName() + ". Sending commit notification at:"
 				+ DateFormat.getDateTimeInstance().format(new Date()));
+				
+		/*Log.i(TAG, "New commits: " + 256 +  ". " + "lala" + ". Sending commit notification at:"
+				+ DateFormat.getDateTimeInstance().format(new Date()));*/
 	}
 
-	private void sendNotification(Context context,
-			ArrayList<HashMap<String, String>> newCommitsData,
-			CharSequence contentText, CharSequence tickerText, String repositoryName) {
-		CharSequence contentTitle = repositoryName;
-
+	
+	private void sendNotification(Context context, CharSequence tickerText, CharSequence contentTitle, CharSequence contentText) {		
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification.Builder notificationBuilder = new Notification.Builder(
 				context).setTicker(tickerText).setContentTitle(contentTitle)
 				.setContentText(contentText).setAutoCancel(true)
-				.setSmallIcon(android.R.drawable.stat_sys_warning)
-				.setVibrate(mVibratePattern).setContentIntent(mContentIntent);
+				.setSmallIcon(R.drawable.ic_launcher)
+				.setVibrate(VIBRATE_PATTERN).setContentIntent(mContentIntent);
 		notificationManager.notify(COMMIT_NOTIFICATION_ID,
 				notificationBuilder.build());
 	}
+
 }

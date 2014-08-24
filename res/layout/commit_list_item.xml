@@ -2,30 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:orientation="vertical" >
-    
+    android:orientation="vertical"
+    android:padding="10dp" >
+
     <TextView
         android:id="@+id/commiterName"
+        style="@style/ListItem.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textStyle="bold" 
-        style="@style/ListItem"/>
- 
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/commitDate"
+        style="@style/ListItem.Small"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:textSize="14sp"
-        style="@style/ListItem"/>
- 
+        android:layout_height="wrap_content"
+        android:textSize="14sp" />
+
     <TextView
         android:id="@+id/commitMessage"
+        style="@style/ListItem.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:textSize="12sp"
-        style="@style/ListItem"/>
+        android:textSize="12sp" />
 
 </LinearLayout>

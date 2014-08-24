@@ -33,7 +33,7 @@
         <item name="android:textColor">@color/app_title_text</item>
     </style> 
 
-    <!-- Buttons theme-->
+    <!-- Buttons theme -->
     <style name="Button">
         <item name="android:background">@drawable/buttons</item>
         <item name="android:textColor">@color/btn_text</item>
@@ -41,15 +41,52 @@
         <item name="android:textStyle">bold</item>
     </style>
     
-    <!-- Header Text theme-->
+    <!-- Header Text theme  -->
     <style name="Header">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textColor">@color/header_text</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     
-    <!-- ListView Items theme-->
+    <!-- ListView theme -->
+    <style name="ListView">
+        <item name="android:divider">@color/listview_divider</item>
+        <item name="android:dividerHeight">@dimen/listview_divider</item>
+        <item name="android:dividerPadding">5dp</item>
+    </style>
+    
+    
+    <!-- ListView Items theme -->
     <style name="ListItem">
         <item name="android:textColor">@color/item_text</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    
+    <!-- ListView Small Items theme -->
+    <style name="ListItem.Small" parent="ListItem">
+        <item name="android:paddingLeft">5dp</item>
+    </style>
+    
+    <!-- EditText theme -->
+    <style name="EditText">
+        <item name="android:textColor">@color/item_text</item>
+    </style>
+    
+    <!-- Dropdown Item theme -->
+    <style name="DropdownItem">
+        <item name="android:textColor">@color/item_text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:padding">5dp</item>
+    </style>
+    
+    <!-- Informational Messages theme -->
+    <style name="InformStatement">
+        <item name="android:textColor">@color/inform_text</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
     </style>
 </resources>

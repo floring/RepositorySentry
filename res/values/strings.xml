@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Repository Sentry</string>
+    <string name="app_name">RepoSentry</string>
     <string name="action_settings">Settings</string>
     
     <!-- **** Strings for List Fragment for each Relation **** -->
     
-    <!-- Alarm List Fragment Strings -->
-    <string name="alarm_list_button_create">Create</string>
+    <!-- Main Activity Strings -->
     <string name="alarm_list_filter_hint">Repository Filter&#8230;</string>
     
     <!-- Menu Strings -->
@@ -19,5 +18,45 @@
     <string name="option_2_hour">2 hour</string>
     <string name="option_1_day">1 day</string>
     <string name="refresh_history">Refresh</string>
+    
+    <!-- Create Alarm Strings -->
+    <string name="textview_username">Username</string>
+    <string name="edittext_username_hint">Enter account username</string>
+    <string name="textview_reponame">Repository Name</string>
+    <string name="edittext_reponame_hint">Enter repository you want to check</string>
+    <string name="textview_vcs">Version Control System</string>
+    <string name="button_clear">Clear</string>
+    <string name="button_set">Set</string>
+    
+    <!-- Alarms Listview items. Unused. Just for screen layout check -->
+    <string name="textview_alarm_username">username</string>
+    <string name="textview_alarm_repository">repository</string>
+    <string name="textview_alarm_date">date</string>
+    <string name="imageview_alarm_type">vcs</string>
+    
+    <!-- VCS Names Strings -->
+    <string name="vcs_git">Git</string>
+    <string name="vcs_bitbucket">BitBucket</string>
+    
+    <!-- Informative Strings -->
+    <string name="no_commits">There are no commits yet!</string>
+    <string name="no_sentries">There are no sentries yet!</string>
+    <string name="you_get_new_commits">You\'ve got new commits!</string>
+    <string name="new_commits_number">New commits number:&#160;</string>
+    <string name="fail_notif_title">Failed to obtain commits</string>
+    <string name="fail_notif_msg">Failed. Please, check the data is correct</string>
+    <string name="report">&#160;report</string>
+    
+    <!-- Dialog Strings -->
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_title_delete_all">Delete sentries</string>
+    <string name="dialog_msg_delete_all">Are you sure you want to delete all sentries?</string>
+    <string name="dialog_title_change_period">Change triggering period</string>
+    <string name="dialog_msg_change_period">Are you sure you want to change trigger period to all sentries?</string>
+    
+    <!-- Toast Strings -->
+    <string name="toast_delete_all">All sentries has been deleted</string>    
+    <string name="toast_sentry_cancel">&#160;sentry canceled</string>
 
 </resources>

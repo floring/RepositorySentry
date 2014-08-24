@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RepoSentry</string>
+    <string name="action_settings">Настройки</string>
+    
+    <!-- **** Strings for List Fragment for each Relation **** -->
+    
+    <!-- Main Activity Strings -->
+    <string name="alarm_list_filter_hint">Репозиторий&#8230;</string>
+    
+    <!-- Menu Strings -->
+    <string name="action_create">Создать</string>
+    <string name="action_reset_all">Удалить все</string>
+    <string name="option_15_min">15 минут</string>
+    <string name="option_30_min">30 минут</string>
+    <string name="option_1_hour">1 час</string>
+    <string name="option_2_hour">2 часа</string>
+    <string name="option_1_day">1 день</string>
+    <string name="refresh_history">Обновить</string>
+    
+    <!-- Create Alarm Strings -->
+    <string name="textview_username">Пользователь</string>
+    <string name="edittext_username_hint">Логин пользователя</string>
+    <string name="textview_reponame">Репозиторий</string>
+    <string name="edittext_reponame_hint">Название репозитория</string>
+    <string name="textview_vcs">Система управления версиями</string>
+    <string name="button_clear">Очистить</string>
+    <string name="button_set">Установить</string>
+    
+    <!-- Alarms Listview items. Unused. Just for screen layout check -->
+    <string name="textview_alarm_username">пользователь</string>
+    <string name="textview_alarm_repository">репозиторий</string>
+    <string name="textview_alarm_date">дата</string>
+    <string name="imageview_alarm_type">скв</string>
+    
+    <!-- VCS Names Strings -->
+    <string name="vcs_git">Git</string>
+    <string name="vcs_bitbucket">BitBucket</string>
+    
+    <!-- Informative Strings -->
+    <string name="no_commits">Нет коммитов!</string>
+    <string name="no_sentries">Нет подписок!</string>
+</resources>

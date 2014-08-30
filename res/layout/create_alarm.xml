@@ -26,7 +26,7 @@
         android:ems="10"
         android:hint="@string/edittext_username_hint"
         android:inputType="textShortMessage"
-        android:text="floring">
+        >
 
         <requestFocus />
     </EditText>
@@ -55,7 +55,6 @@
         android:ems="10"
         android:hint="@string/edittext_reponame_hint"
         android:inputType="textShortMessage"
-        android:text="RepositorySentry" 
        >
 
         <requestFocus />

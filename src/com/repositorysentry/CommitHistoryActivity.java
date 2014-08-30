@@ -4,28 +4,44 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
 public class CommitHistoryActivity extends ListActivity {
 	
-
+	private String mUsername;
+	private String mRepositoryName;
 	private CommitInspector mInspector = CommitInspector.getInstance();
-	private Repository mRepository;
-	private CommitAdapter mAdapter;
+	private ArrayList<HashMap<String, String>> mCommitList = new ArrayList<HashMap<String,String>>();
+	private SimpleAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.commit_history_listview);
-		mRepository = getIntent().getParcelableExtra(
-				SentryCreator.INTENT_KEY_REPO);
-		ArrayList<HashMap<String, String>> commitList = mInspector
-				.getCommitsHistory(mRepository);
 
-		mAdapter = new CommitAdapter(this, commitList);
-		setListAdapter(mAdapter);
+		Intent intent = getIntent();
+		mUsername = intent.getStringExtra("Username");
+		mRepositoryName = intent.getStringExtra("RepositoryName");
+
+		mCommitList = mInspector
+				.getCommitsHistoryFromDB(mRepositoryName);
+	
+		mAdapter = new SimpleAdapter(CommitHistoryActivity.this,
+				mCommitList,
+				R.layout.commit_list_item, new String[] {
+						CommitHistoryParsing.NAME_TAG,
+						CommitHistoryParsing.DATE_TAG,
+						CommitHistoryParsing.MESSAGE_TAG },
+				new int[] { R.id.commiterName, R.id.commitDate, 
+						R.id.commitMessage });
+		ListView listView = (ListView) findViewById(android.R.id.list);
+		listView.setAdapter(mAdapter);
 	}
 
 	@Override
@@ -46,12 +62,19 @@ public class CommitHistoryActivity extends ListActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
+	
 	private void refreshCommitHistory() {
-		ArrayList<HashMap<String, String>> commits = mRepository.getCommits();
-		if (commits != null) {
-			mInspector.getNewCommits(mRepository, commits);
-			mAdapter.refresh(commits);
-		}
+		CommitHistoryParsing commitHistory = new CommitHistoryParsing(this);
+		ArrayList<HashMap<String, String>> commitsInfo = commitHistory
+				.getCommitsHistory(mUsername, mRepositoryName);
+		mInspector.getNewCommits(mRepositoryName, commitsInfo);
+		
+		refreshAdapter(commitsInfo);
+	}
+	
+	private void refreshAdapter(ArrayList<HashMap<String, String>> commits) {		
+		mCommitList.clear();
+		mCommitList.addAll(commits);
+		mAdapter.notifyDataSetChanged();
 	}
 }
